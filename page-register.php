@@ -43,7 +43,11 @@ get_header();
 		}
 	endwhile;
 
-	echo do_shortcode( '[reunion_form]' );
+	if ( shortcode_exists( 'reunion_registration_form' ) ) {
+		echo do_shortcode( '[reunion_registration_form]' );
+	} else {
+		echo do_shortcode( '[reunion_form]' );
+	}
 	?>
 
 <?php
