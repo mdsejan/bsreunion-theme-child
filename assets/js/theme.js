@@ -53,7 +53,11 @@
 			.map((d) => BN_DIGITS[d] || d)
 			.join('');
 
-	const targetRaw = window.BRC_THEME && window.BRC_THEME.countdownTarget ? window.BRC_THEME.countdownTarget : '2026-11-25T09:00:00+06:00';
+	const cdRoot = document.getElementById('countdown');
+	const targetRaw =
+		(cdRoot && cdRoot.getAttribute('data-countdown-target')) ||
+		(window.BRC_THEME && window.BRC_THEME.countdownTarget) ||
+		'2026-11-25T09:00:00+06:00';
 	const target = new Date(targetRaw).getTime();
 	const cd = {
 		days: document.querySelector('[data-cd="days"]'),

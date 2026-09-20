@@ -91,7 +91,7 @@ $brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 		<div class="relative max-w-6xl mx-auto px-5 sm:px-8 py-8 sm:py-10 text-center">
 			<p class="font-display gold-text inline-block text-base sm:text-lg tracking-[.12em] leading-[1.7] pt-1">— <?php esc_html_e( 'রেজিস্ট্রেশন চলছে', 'bagbari-reunion-sejan' ); ?></p>
 			<h2 class="font-display text-3xl sm:text-4xl md:text-[2.75rem] mt-2 leading-[1.45] pt-2"><?php esc_html_e( 'রেজিস্ট্রেশনের সময় বাকি', 'bagbari-reunion-sejan' ); ?></h2>
-			<div id="countdown" class="mt-6 sm:mt-7 flex justify-center gap-3 sm:gap-5">
+			<div id="countdown" class="mt-6 sm:mt-7 flex justify-center gap-3 sm:gap-5" data-countdown-target="<?php echo esc_attr( brc_get_countdown_target_iso() ); ?>">
 				<div class="text-center">
 					<div class="w-[72px] sm:w-28 lg:w-32 rounded-xl bg-white/10 border border-[#e7b24c]/35 py-4 sm:py-5 shadow-md backdrop-blur-sm font-display font-bold text-[#facc15] text-3xl sm:text-5xl leading-[1.25] pt-5" style="text-shadow:0 0 18px rgba(250,204,21,.45)" data-cd="days">০০</div>
 					<p class="text-xs sm:text-sm text-emerald-50/80 mt-2 tracking-wide leading-relaxed"><?php esc_html_e( 'দিন', 'bagbari-reunion-sejan' ); ?></p>

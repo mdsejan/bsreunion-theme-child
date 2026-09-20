@@ -89,11 +89,12 @@ function brc_enqueue_assets() {
 		true
 	);
 
+	$brc_countdown_iso = function_exists( 'brc_get_countdown_target_iso' ) ? brc_get_countdown_target_iso() : apply_filters( 'brc_countdown_target', '2026-11-25T09:00:00+06:00' );
 	wp_localize_script(
 		'brc-theme',
 		'BRC_THEME',
 		array(
-			'countdownTarget' => apply_filters( 'brc_countdown_target', '2026-11-25T09:00:00+06:00' ),
+			'countdownTarget' => $brc_countdown_iso,
 			'homeUrl'         => esc_url_raw( home_url( '/' ) ),
 		)
 	);
@@ -259,10 +260,10 @@ function brc_register_theme_settings() {
 	add_settings_field(
 		'registration_deadline',
 		__( 'Registration Deadline', 'bagbari-reunion-sejan' ),
-		'brc_render_text_field',
+		'brc_render_datetime_field',
 		BRC_SETTINGS_PAGE,
 		'brc_event_section',
-		array( 'id' => 'registration_deadline', 'placeholder' => '১৫ ডিসেম্বর ২০২৬' )
+		array( 'id' => 'registration_deadline', 'desc' => __( 'Controls the frontend countdown. Pick the exact deadline date & time.', 'bagbari-reunion-sejan' ) )
 	);
 
 	add_settings_field(
@@ -336,6 +337,33 @@ function brc_render_text_field( $args ) {
 	}
 }
 
+function brc_render_datetime_field( $args ) {
+	$options = get_option( BRC_SETTINGS_OPTION, array() );
+	$id      = $args['id'];
+	$value   = $options[ $id ] ?? '';
+	$dt_value = '';
+	if ( '' !== $value ) {
+		$ts = strtotime( $value );
+		if ( false !== $ts ) {
+			$dt_value = gmdate( 'Y-m-d\TH:i', $ts + (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ) );
+		} elseif ( preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/', $value ) ) {
+			$dt_value = substr( $value, 0, 16 );
+		}
+	}
+	printf(
+		'<input type="datetime-local" name="%1$s[%2$s]" value="%3$s" class="regular-text" />',
+		esc_attr( BRC_SETTINGS_OPTION ),
+		esc_attr( $id ),
+		esc_attr( $dt_value )
+	);
+	if ( '' !== $value && false !== strtotime( $value ) ) {
+		printf( '<p class="description">%s: <code>%s</code></p>', esc_html__( 'Saved', 'bagbari-reunion-sejan' ), esc_html( gmdate( 'c', strtotime( $value ) ) ) );
+	}
+	if ( ! empty( $args['desc'] ) ) {
+		printf( '<p class="description">%s</p>', esc_html( $args['desc'] ) );
+	}
+}
+
 function brc_sanitize_theme_settings( $input ) {
 	$output = array();
 	if ( isset( $input['event_date'] ) ) {
@@ -351,7 +379,16 @@ function brc_sanitize_theme_settings( $input ) {
 		$output['pass_price'] = sanitize_text_field( $input['pass_price'] );
 	}
 	if ( isset( $input['registration_deadline'] ) ) {
-		$output['registration_deadline'] = sanitize_text_field( $input['registration_deadline'] );
+		$raw = trim( (string) $input['registration_deadline'] );
+		if ( '' === $raw ) {
+			$output['registration_deadline'] = '';
+		} elseif ( preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/', $raw ) ) {
+			$ts = strtotime( $raw );
+			$output['registration_deadline'] = false !== $ts ? gmdate( 'c', $ts ) : sanitize_text_field( $raw );
+		} else {
+			$ts = strtotime( $raw );
+			$output['registration_deadline'] = false !== $ts ? gmdate( 'c', $ts ) : sanitize_text_field( $raw );
+		}
 	}
 	if ( isset( $input['phone'] ) ) {
 		$output['phone'] = sanitize_text_field( $input['phone'] );
@@ -374,13 +411,25 @@ function brc_get_theme_settings() {
 		'event_time'           => 'শুক্রবার, সকাল ৯:০০',
 		'event_location'       => 'স্কুল প্রাঙ্গণ, বাগবাড়ী, বগুড়া',
 		'pass_price'           => '৳১,০০০',
-		'registration_deadline' => '১৫ ডিসেম্বর ২০২৬',
+		'registration_deadline' => '2026-11-25T09:00:00+06:00',
 		'phone'                => '',
 		'email'                => '',
 		'facebook_page'        => '',
 		'facebook_group'       => '',
 	);
 	return wp_parse_args( (array) get_option( BRC_SETTINGS_OPTION, array() ), $defaults );
+}
+
+function brc_get_countdown_target_iso() {
+	$s   = brc_get_theme_settings();
+	$raw = trim( (string) ( $s['registration_deadline'] ?? '' ) );
+	if ( '' !== $raw ) {
+		$ts = strtotime( $raw );
+		if ( false !== $ts ) {
+			return gmdate( 'c', $ts );
+		}
+	}
+	return apply_filters( 'brc_countdown_target', '2026-11-25T09:00:00+06:00' );
 }
 
 function brc_get_phone_href( $phone_display ) {
@@ -460,7 +509,13 @@ add_shortcode( 'theme_event_price', 'brc_sc_pass_price' );
 add_shortcode( 'theme_event_pass_price', 'brc_sc_pass_price' );
 
 function brc_sc_registration_deadline() {
-	return esc_html( brc_get_theme_settings()['registration_deadline'] );
+	$s   = brc_get_theme_settings();
+	$raw = $s['registration_deadline'];
+	$ts  = strtotime( $raw );
+	if ( false !== $ts ) {
+		return esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $ts ) );
+	}
+	return esc_html( $raw );
 }
 add_shortcode( 'brc_registration_deadline', 'brc_sc_registration_deadline' );
 add_shortcode( 'theme_event_deadline', 'brc_sc_registration_deadline' );
