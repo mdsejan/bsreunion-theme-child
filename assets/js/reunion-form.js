@@ -23,6 +23,12 @@
 	const donationInput = document.getElementById('donation');
 	const totalFeeEl = document.getElementById('total_fee');
 
+	function getBaseFee() {
+		const raw = totalFeeEl && totalFeeEl.dataset ? totalFeeEl.dataset.baseFee : '';
+		const n = parseInt(raw, 10);
+		return Number.isFinite(n) && n > 0 ? n : 1000;
+	}
+
 	function calculateTotal() {
 		if (!guestsInput || !donationInput || !totalFeeEl) {
 			return;
@@ -37,7 +43,7 @@
 			donationInput.value = 0;
 			donationAmt = 0;
 		}
-		totalFeeEl.textContent = bnNum(1000 + guestCount * 500 + donationAmt);
+		totalFeeEl.textContent = bnNum(getBaseFee() + guestCount * 500 + donationAmt);
 	}
 	if (guestsInput && donationInput) {
 		guestsInput.addEventListener('input', calculateTotal);

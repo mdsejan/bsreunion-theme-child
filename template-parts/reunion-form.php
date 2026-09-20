@@ -10,6 +10,18 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+$brc               = function_exists( 'brc_get_theme_settings' ) ? brc_get_theme_settings() : array();
+$brc_pass_price    = ! empty( $brc['pass_price'] ) ? $brc['pass_price'] : '৳১,০০০';
+$brc_pass_numeric  = (int) preg_replace( '/[^0-9]/', '', $brc_pass_price );
+if ( 0 === $brc_pass_numeric ) {
+	$brc_pass_numeric = 1000;
+}
+$brc_pass_display  = ltrim( trim( $brc_pass_price ), "৳ \t\n\r\0\x0B" );
+if ( '' === $brc_pass_display ) {
+	$brc_pass_display = '১,০০০';
+}
+$brc_email         = ! empty( $brc['email'] ) ? $brc['email'] : 'help@bagbari-reunion.com';
 ?>
 <!-- SHORTCODE-START: [reunion_form] -->
 <main id="reunion-form" class="relative bg-maroon overflow-hidden">
@@ -174,13 +186,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</div>
 						<div>
 							<label class="rf-label" for="reg_fee"><?php esc_html_e( 'রেজিস্ট্রেশন ফি (সদস্য)', 'bagbari-reunion-sejan' ); ?></label>
-							<input type="text" readonly id="reg_fee" value="১,০০০" tabindex="-1" class="rf-input" style="background:#EDE6DA;cursor:not-allowed">
+							<input type="text" readonly id="reg_fee" value="<?php echo esc_attr( $brc_pass_display ); ?>" tabindex="-1" class="rf-input" style="background:#EDE6DA;cursor:not-allowed" data-base-fee="<?php echo esc_attr( $brc_pass_numeric ); ?>">
 						</div>
 					</div>
 
 					<div class="mt-4 rounded-2xl border border-gold/35 bg-gold/10 p-4 flex justify-between items-center gap-4">
 						<span class="text-paper/85"><?php esc_html_e( 'সর্বমোট প্রদেয়', 'bagbari-reunion-sejan' ); ?></span>
-						<span class="font-display text-2xl text-[#F4C430]">৳<span id="total_fee">১,০০০</span></span>
+						<span class="font-display text-2xl text-[#F4C430]">৳<span id="total_fee" data-base-fee="<?php echo esc_attr( $brc_pass_numeric ); ?>"><?php echo esc_html( $brc_pass_display ); ?></span></span>
 					</div>
 
 					<h2 class="rf-section font-display text-xl mt-10"><?php esc_html_e( '৪. পেমেন্ট পদ্ধতি', 'bagbari-reunion-sejan' ); ?></h2>
@@ -292,7 +304,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</button>
 						<p class="text-[11px] text-center text-paper/55 mt-3">
 							<?php esc_html_e( '“নিবন্ধন সম্পন্ন করুন” বাটনে ক্লিক করার মাধ্যমে আপনি ইভেন্টের শর্তাবলী মেনে নিচ্ছেন।', 'bagbari-reunion-sejan' ); ?><br>
-							✉️ <?php esc_html_e( 'সহায়তা:', 'bagbari-reunion-sejan' ); ?> <a href="mailto:help@bagbari-reunion.com" class="text-[#F4C430] font-medium">help@bagbari-reunion.com</a>
+							✉️ <?php esc_html_e( 'সহায়তা:', 'bagbari-reunion-sejan' ); ?> <a href="<?php echo esc_url( 'mailto:' . $brc_email ); ?>" class="text-[#F4C430] font-medium"><?php echo esc_html( $brc_email ); ?></a>
 						</p>
 					</div>
 				</form>

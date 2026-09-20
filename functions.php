@@ -200,6 +200,13 @@ function brc_register_theme_settings() {
 	);
 
 	add_settings_section(
+		'brc_event_section',
+		__( 'Event Details', 'bagbari-reunion-sejan' ),
+		'brc_event_section_cb',
+		BRC_SETTINGS_PAGE
+	);
+
+	add_settings_section(
 		'brc_contact_section',
 		__( 'Contact Information', 'bagbari-reunion-sejan' ),
 		'brc_contact_section_cb',
@@ -211,6 +218,51 @@ function brc_register_theme_settings() {
 		__( 'Social Links', 'bagbari-reunion-sejan' ),
 		'brc_social_section_cb',
 		BRC_SETTINGS_PAGE
+	);
+
+	add_settings_field(
+		'event_date',
+		__( 'Event Date', 'bagbari-reunion-sejan' ),
+		'brc_render_text_field',
+		BRC_SETTINGS_PAGE,
+		'brc_event_section',
+		array( 'id' => 'event_date', 'placeholder' => '২৫ ডিসেম্বর ২০২৬', 'desc' => __( 'Used in hero, banners, and info strips.', 'bagbari-reunion-sejan' ) )
+	);
+
+	add_settings_field(
+		'event_time',
+		__( 'Event Time / Schedule', 'bagbari-reunion-sejan' ),
+		'brc_render_text_field',
+		BRC_SETTINGS_PAGE,
+		'brc_event_section',
+		array( 'id' => 'event_time', 'placeholder' => 'শুক্রবার, সকাল ৯:০০' )
+	);
+
+	add_settings_field(
+		'event_location',
+		__( 'Event Location / Venue', 'bagbari-reunion-sejan' ),
+		'brc_render_text_field',
+		BRC_SETTINGS_PAGE,
+		'brc_event_section',
+		array( 'id' => 'event_location', 'placeholder' => 'স্কুল প্রাঙ্গণ, বাগবাড়ী, বগুড়া' )
+	);
+
+	add_settings_field(
+		'pass_price',
+		__( 'Pass Price', 'bagbari-reunion-sejan' ),
+		'brc_render_text_field',
+		BRC_SETTINGS_PAGE,
+		'brc_event_section',
+		array( 'id' => 'pass_price', 'placeholder' => '৳১,০০০' )
+	);
+
+	add_settings_field(
+		'registration_deadline',
+		__( 'Registration Deadline', 'bagbari-reunion-sejan' ),
+		'brc_render_text_field',
+		BRC_SETTINGS_PAGE,
+		'brc_event_section',
+		array( 'id' => 'registration_deadline', 'placeholder' => '১৫ ডিসেম্বর ২০২৬' )
 	);
 
 	add_settings_field(
@@ -250,6 +302,10 @@ function brc_register_theme_settings() {
 	);
 }
 
+function brc_event_section_cb() {
+	echo '<p>' . esc_html__( 'Central event details — update once, reflected everywhere (hero, banners, pricing, registration).', 'bagbari-reunion-sejan' ) . '</p>';
+}
+
 function brc_contact_section_cb() {
 	echo '<p>' . esc_html__( 'Contact details displayed in the footer and across the site.', 'bagbari-reunion-sejan' ) . '</p>';
 }
@@ -282,6 +338,21 @@ function brc_render_text_field( $args ) {
 
 function brc_sanitize_theme_settings( $input ) {
 	$output = array();
+	if ( isset( $input['event_date'] ) ) {
+		$output['event_date'] = sanitize_text_field( $input['event_date'] );
+	}
+	if ( isset( $input['event_time'] ) ) {
+		$output['event_time'] = sanitize_text_field( $input['event_time'] );
+	}
+	if ( isset( $input['event_location'] ) ) {
+		$output['event_location'] = sanitize_text_field( $input['event_location'] );
+	}
+	if ( isset( $input['pass_price'] ) ) {
+		$output['pass_price'] = sanitize_text_field( $input['pass_price'] );
+	}
+	if ( isset( $input['registration_deadline'] ) ) {
+		$output['registration_deadline'] = sanitize_text_field( $input['registration_deadline'] );
+	}
 	if ( isset( $input['phone'] ) ) {
 		$output['phone'] = sanitize_text_field( $input['phone'] );
 	}
@@ -299,10 +370,15 @@ function brc_sanitize_theme_settings( $input ) {
 
 function brc_get_theme_settings() {
 	$defaults = array(
-		'phone'          => '',
-		'email'          => '',
-		'facebook_page'  => '',
-		'facebook_group' => '',
+		'event_date'           => '২৫ ডিসেম্বর ২০২৬',
+		'event_time'           => 'শুক্রবার, সকাল ৯:০০',
+		'event_location'       => 'স্কুল প্রাঙ্গণ, বাগবাড়ী, বগুড়া',
+		'pass_price'           => '৳১,০০০',
+		'registration_deadline' => '১৫ ডিসেম্বর ২০২৬',
+		'phone'                => '',
+		'email'                => '',
+		'facebook_page'        => '',
+		'facebook_group'       => '',
 	);
 	return wp_parse_args( (array) get_option( BRC_SETTINGS_OPTION, array() ), $defaults );
 }
@@ -357,6 +433,37 @@ function brc_sc_facebook_group() {
 	return esc_url( $s['facebook_group'] );
 }
 add_shortcode( 'brc_facebook_group', 'brc_sc_facebook_group' );
+
+function brc_sc_event_date() {
+	return esc_html( brc_get_theme_settings()['event_date'] );
+}
+add_shortcode( 'brc_event_date', 'brc_sc_event_date' );
+add_shortcode( 'theme_event_date', 'brc_sc_event_date' );
+
+function brc_sc_event_time() {
+	return esc_html( brc_get_theme_settings()['event_time'] );
+}
+add_shortcode( 'brc_event_time', 'brc_sc_event_time' );
+add_shortcode( 'theme_event_time', 'brc_sc_event_time' );
+
+function brc_sc_event_location() {
+	return esc_html( brc_get_theme_settings()['event_location'] );
+}
+add_shortcode( 'brc_event_location', 'brc_sc_event_location' );
+add_shortcode( 'theme_event_location', 'brc_sc_event_location' );
+
+function brc_sc_pass_price() {
+	return esc_html( brc_get_theme_settings()['pass_price'] );
+}
+add_shortcode( 'brc_pass_price', 'brc_sc_pass_price' );
+add_shortcode( 'theme_event_price', 'brc_sc_pass_price' );
+add_shortcode( 'theme_event_pass_price', 'brc_sc_pass_price' );
+
+function brc_sc_registration_deadline() {
+	return esc_html( brc_get_theme_settings()['registration_deadline'] );
+}
+add_shortcode( 'brc_registration_deadline', 'brc_sc_registration_deadline' );
+add_shortcode( 'theme_event_deadline', 'brc_sc_registration_deadline' );
 
 function brc_render_theme_settings_page() {
 	if ( ! current_user_can( 'manage_options' ) ) {

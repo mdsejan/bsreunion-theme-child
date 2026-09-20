@@ -12,6 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 get_header();
+
+$brc = function_exists( 'brc_get_theme_settings' ) ? brc_get_theme_settings() : array(
+	'event_date'           => '২৫ ডিসেম্বর ২০২৬',
+	'event_time'           => 'শুক্রবার, সকাল ৯:০০',
+	'event_location'       => 'স্কুল প্রাঙ্গণ, বাগবাড়ী, বগুড়া',
+	'pass_price'           => '৳১,০০০',
+	'registration_deadline' => '১৫ ডিসেম্বর ২০২৬',
+);
 ?>
 
 	<div class="relative bg-maroon overflow-hidden">
@@ -23,8 +31,8 @@ get_header();
 			<h1 class="font-display text-3xl sm:text-4xl md:text-5xl mt-4 text-paper"><?php esc_html_e( 'নিবন্ধন', 'bagbari-reunion-sejan' ); ?> <span class="gold-text"><?php esc_html_e( 'ফরম', 'bagbari-reunion-sejan' ); ?></span></h1>
 			<p class="mt-5 text-paper/75 max-w-xl mx-auto leading-relaxed"><?php esc_html_e( 'নিচের তথ্যগুলো সঠিকভাবে পূরণ করে আপনার আসনটি নিশ্চিত করুন।', 'bagbari-reunion-sejan' ); ?></p>
 			<div class="mt-7 flex flex-wrap items-center justify-center gap-2.5">
-				<span class="pill">📅 <?php esc_html_e( '২৫ ডিসেম্বর ২০২৬', 'bagbari-reunion-sejan' ); ?></span>
-				<span class="pill">🎟 <?php esc_html_e( 'পাস ৳১,০০০', 'bagbari-reunion-sejan' ); ?></span>
+				<span class="pill">📅 <?php echo esc_html( $brc['event_date'] ); ?></span>
+				<span class="pill">🎟 <?php printf( esc_html__( 'পাস %s', 'bagbari-reunion-sejan' ), esc_html( $brc['pass_price'] ) ); ?></span>
 				<span class="pill">👨‍👩‍👧 <?php esc_html_e( 'অতিথি ৳৫০০/জন', 'bagbari-reunion-sejan' ); ?></span>
 			</div>
 		</div>

@@ -16,6 +16,15 @@ $assets_uri   = get_stylesheet_directory_uri() . '/assets';
 $register_url = brc_get_register_url();
 $about_url    = home_url( '/#about' );
 $schedule_url = home_url( '/#schedule' );
+$brc          = function_exists( 'brc_get_theme_settings' ) ? brc_get_theme_settings() : array(
+	'event_date'           => '২৫ ডিসেম্বর ২০২৬',
+	'event_time'           => 'শুক্রবার, সকাল ৯:০০',
+	'event_location'       => 'স্কুল প্রাঙ্গণ, বাগবাড়ী, বগুড়া',
+	'pass_price'           => '৳১,০০০',
+	'registration_deadline' => '১৫ ডিসেম্বর ২০২৬',
+);
+$brc_time_parts = array_map( 'trim', explode( ',', $brc['event_time'] ) );
+$brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 ?>
 
 	<section class="relative min-h-[100svh] flex items-end overflow-hidden">
@@ -51,20 +60,24 @@ $schedule_url = home_url( '/#schedule' );
 				</a>
 			</div>
 			<div id="heroPills" class="mt-6 flex flex-wrap items-center gap-2.5 opacity-0">
-				<span class="pill">📅 <?php esc_html_e( '২৫ ডিসেম্বর ২০২৬', 'bagbari-reunion-sejan' ); ?></span>
-				<span class="pill">🗓 <?php esc_html_e( 'শুক্রবার', 'bagbari-reunion-sejan' ); ?></span>
-				<span class="pill">⏰ <?php esc_html_e( 'সকাল ৯:০০', 'bagbari-reunion-sejan' ); ?></span>
-				<span class="pill">📍 <?php esc_html_e( 'স্কুল প্রাঙ্গণ, বাগবাড়ী, বগুড়া', 'bagbari-reunion-sejan' ); ?></span>
+				<span class="pill">📅 <?php echo esc_html( $brc['event_date'] ); ?></span>
+				<?php if ( $brc_has_split ) : ?>
+					<span class="pill">🗓 <?php echo esc_html( $brc_time_parts[0] ); ?></span>
+					<span class="pill">⏰ <?php echo esc_html( $brc_time_parts[1] ); ?></span>
+				<?php else : ?>
+					<span class="pill">⏰ <?php echo esc_html( $brc['event_time'] ); ?></span>
+				<?php endif; ?>
+				<span class="pill">📍 <?php echo esc_html( $brc['event_location'] ); ?></span>
 			</div>
 		</div>
 
 		<div id="pinnedCard" class="hidden lg:block absolute right-10 bottom-10 w-64 bg-paper text-ink px-6 py-5 -rotate-3 shadow-2xl opacity-0">
 			<div class="tape -top-3 left-1/2 -translate-x-1/2 rotate-2"></div>
 			<p class="font-display text-sm text-maroon">📅 <?php esc_html_e( 'তারিখ ও বার', 'bagbari-reunion-sejan' ); ?></p>
-			<p class="font-display text-lg mt-1 leading-snug"><?php esc_html_e( '২৫ ডিসেম্বর, ২০২৬', 'bagbari-reunion-sejan' ); ?><br><?php esc_html_e( 'শুক্রবার, সকাল ৯টা', 'bagbari-reunion-sejan' ); ?></p>
+			<p class="font-display text-lg mt-1 leading-snug"><?php echo esc_html( $brc['event_date'] ); ?><br><?php echo esc_html( $brc['event_time'] ); ?></p>
 			<div class="h-px bg-ink/15 my-3"></div>
 			<p class="font-display text-sm text-maroon">📍 <?php esc_html_e( 'ভেন্যু', 'bagbari-reunion-sejan' ); ?></p>
-			<p class="text-sm mt-1 leading-snug"><?php esc_html_e( 'স্কুল মূল ক্যাম্পাস, বাগবাড়ী, গাবতলী, বগুড়া', 'bagbari-reunion-sejan' ); ?></p>
+			<p class="text-sm mt-1 leading-snug"><?php echo esc_html( $brc['event_location'] ); ?></p>
 		</div>
 
 		<div id="scrollCue" class="absolute bottom-5 left-5 sm:left-8 flex items-center gap-3 text-paper/60 text-xs">
@@ -306,15 +319,15 @@ $schedule_url = home_url( '/#schedule' );
 				<div class="px-7 sm:px-10 grid grid-cols-3 gap-2 text-center border-y border-gold/15 py-4">
 					<div>
 						<p class="pass-label"><?php esc_html_e( 'তারিখ', 'bagbari-reunion-sejan' ); ?></p>
-						<p class="font-display text-paper mt-1"><?php esc_html_e( '২৫ ডিসে. ২০২৬', 'bagbari-reunion-sejan' ); ?></p>
+						<p class="font-display text-paper mt-1"><?php echo esc_html( $brc['event_date'] ); ?></p>
 					</div>
 					<div class="border-x border-gold/15">
 						<p class="pass-label"><?php esc_html_e( 'বার', 'bagbari-reunion-sejan' ); ?></p>
-						<p class="font-display text-paper mt-1"><?php esc_html_e( 'শুক্রবার', 'bagbari-reunion-sejan' ); ?></p>
+						<p class="font-display text-paper mt-1"><?php echo esc_html( $brc_has_split ? $brc_time_parts[0] : $brc['event_time'] ); ?></p>
 					</div>
 					<div>
 						<p class="pass-label"><?php esc_html_e( 'সময়', 'bagbari-reunion-sejan' ); ?></p>
-						<p class="font-display text-paper mt-1"><?php esc_html_e( 'সকাল ৯:০০', 'bagbari-reunion-sejan' ); ?></p>
+						<p class="font-display text-paper mt-1"><?php echo esc_html( $brc_has_split ? $brc_time_parts[1] : $brc['event_time'] ); ?></p>
 					</div>
 				</div>
 				<div class="px-7 sm:px-10 py-6">
@@ -332,7 +345,7 @@ $schedule_url = home_url( '/#schedule' );
 					<div class="flex items-center justify-between gap-6">
 						<div>
 							<p class="pass-label"><?php esc_html_e( 'পাসের মূল্য', 'bagbari-reunion-sejan' ); ?></p>
-							<p class="font-display text-4xl sm:text-5xl mt-1 gold-text">৳১,০০০</p>
+							<p class="font-display text-4xl sm:text-5xl mt-1 gold-text"><?php echo esc_html( $brc['pass_price'] ); ?></p>
 							<p class="text-xs text-paper/50 mt-1"><?php esc_html_e( 'প্রতি জন', 'bagbari-reunion-sejan' ); ?></p>
 						</div>
 						<div class="seal w-16 h-16 sm:w-20 sm:h-20 grid place-items-center shrink-0" aria-hidden="true">
