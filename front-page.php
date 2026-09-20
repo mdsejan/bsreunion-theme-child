@@ -281,9 +281,13 @@ $brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 				<?php endwhile; ?>
 			</div>
 				<?php wp_reset_postdata(); ?>
+			<?php
+			$brc_sponsor_cta = function_exists( 'brc_get_sponsor_cta_url' ) ? brc_get_sponsor_cta_url() : 'mailto:' . ( brc_get_theme_settings()['email'] ?: 'sponsor@bagbari-reunion.com' );
+			$brc_sponsor_is_http = 0 === strpos( $brc_sponsor_cta, 'http' );
+			?>
 			<div class="mt-16 text-center sponsor-anim">
 				<p class="text-ink/60 leading-[1.7]"><?php esc_html_e( 'আপনার প্রতিষ্ঠানও এই আয়োজনের অংশ হতে চায়?', 'bagbari-reunion-sejan' ); ?></p>
-				<a href="mailto:sponsor@bagbari-reunion.com" class="link-arrow inline-flex items-center gap-2 mt-5 rounded-full bg-maroon text-paper font-semibold px-7 py-3.5 hover:bg-ink transition-colors">
+				<a href="<?php echo esc_url( $brc_sponsor_cta ); ?>"<?php echo $brc_sponsor_is_http ? ' target="_blank" rel="noopener noreferrer"' : ''; ?> class="link-arrow inline-flex items-center gap-2 mt-5 rounded-full bg-maroon text-paper font-semibold px-7 py-3.5 hover:bg-ink transition-colors">
 					<?php esc_html_e( 'স্পন্সর হতে চাই', 'bagbari-reunion-sejan' ); ?> <span class="arw" aria-hidden="true">→</span>
 				</a>
 			</div>
@@ -292,7 +296,11 @@ $brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 				<div class="bg-white/60 border border-amber-900/10 rounded-xl p-8 sm:p-10 text-center flex flex-col items-center gap-4 sponsor-card">
 					<p class="font-display text-2xl sm:text-3xl leading-tight text-maroon"><?php esc_html_e( 'আমাদের প্রথম স্পন্সর হওয়ার সুযোগ নিন!', 'bagbari-reunion-sejan' ); ?></p>
 					<p class="text-ink/70 leading-[1.7] max-w-md"><?php esc_html_e( 'আপনার প্রতিষ্ঠানও এই আয়োজনের অংশ হতে চায়?', 'bagbari-reunion-sejan' ); ?></p>
-					<a href="mailto:sponsor@bagbari-reunion.com" class="link-arrow mt-2 inline-flex items-center gap-2 rounded-full bg-maroon text-paper font-semibold px-7 py-3.5 hover:bg-ink transition-colors">
+					<?php
+					$brc_sponsor_cta = function_exists( 'brc_get_sponsor_cta_url' ) ? brc_get_sponsor_cta_url() : 'mailto:' . ( brc_get_theme_settings()['email'] ?: 'sponsor@bagbari-reunion.com' );
+					$brc_sponsor_is_http = 0 === strpos( $brc_sponsor_cta, 'http' );
+					?>
+					<a href="<?php echo esc_url( $brc_sponsor_cta ); ?>"<?php echo $brc_sponsor_is_http ? ' target="_blank" rel="noopener noreferrer"' : ''; ?> class="link-arrow mt-2 inline-flex items-center gap-2 rounded-full bg-maroon text-paper font-semibold px-7 py-3.5 hover:bg-ink transition-colors">
 						<?php esc_html_e( 'স্পন্সর হতে চাই', 'bagbari-reunion-sejan' ); ?> <span class="arw" aria-hidden="true">→</span>
 					</a>
 				</div>

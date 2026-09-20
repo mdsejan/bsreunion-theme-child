@@ -253,6 +253,13 @@ function brc_register_theme_settings() {
 		BRC_SETTINGS_PAGE
 	);
 
+	add_settings_section(
+		'brc_sponsor_section',
+		__( 'Sponsor Settings', 'bagbari-reunion-sejan' ),
+		'brc_sponsor_section_cb',
+		BRC_SETTINGS_PAGE
+	);
+
 	add_settings_field(
 		'event_date',
 		__( 'Event Date', 'bagbari-reunion-sejan' ),
@@ -333,6 +340,15 @@ function brc_register_theme_settings() {
 		'brc_social_section',
 		array( 'id' => 'facebook_group', 'type' => 'url', 'placeholder' => 'https://facebook.com/groups/your-group' )
 	);
+
+	add_settings_field(
+		'sponsor_form_link',
+		__( 'Sponsor Form Link', 'bagbari-reunion-sejan' ),
+		'brc_render_text_field',
+		BRC_SETTINGS_PAGE,
+		'brc_sponsor_section',
+		array( 'id' => 'sponsor_form_link', 'type' => 'url', 'placeholder' => 'https://forms.gle/... or https://...', 'desc' => __( 'Google Form or contact URL for "স্পন্সর হতে চাই". Opens in new tab. Leave empty to use mailto fallback.', 'bagbari-reunion-sejan' ) )
+	);
 }
 
 function brc_event_section_cb() {
@@ -345,6 +361,10 @@ function brc_contact_section_cb() {
 
 function brc_social_section_cb() {
 	echo '<p>' . esc_html__( 'Social profile URLs displayed in the footer. Leave empty to hide.', 'bagbari-reunion-sejan' ) . '</p>';
+}
+
+function brc_sponsor_section_cb() {
+	echo '<p>' . esc_html__( 'Sponsor inquiry form URL used by both "স্পন্সর হতে চাই" buttons.', 'bagbari-reunion-sejan' ) . '</p>';
 }
 
 function brc_general_section_cb() {
@@ -434,6 +454,9 @@ function brc_sanitize_theme_settings( $input ) {
 	if ( isset( $input['facebook_group'] ) ) {
 		$output['facebook_group'] = esc_url_raw( trim( $input['facebook_group'] ) );
 	}
+	if ( isset( $input['sponsor_form_link'] ) ) {
+		$output['sponsor_form_link'] = esc_url_raw( trim( $input['sponsor_form_link'] ) );
+	}
 	return $output;
 }
 
@@ -448,8 +471,18 @@ function brc_get_theme_settings() {
 		'email'                => '',
 		'facebook_page'        => '',
 		'facebook_group'       => '',
+		'sponsor_form_link'    => '',
 	);
 	return wp_parse_args( (array) get_option( BRC_SETTINGS_OPTION, array() ), $defaults );
+}
+
+function brc_get_sponsor_cta_url() {
+	$s = brc_get_theme_settings();
+	if ( ! empty( $s['sponsor_form_link'] ) ) {
+		return $s['sponsor_form_link'];
+	}
+	$email = ! empty( $s['email'] ) ? $s['email'] : 'sponsor@bagbari-reunion.com';
+	return 'mailto:' . $email;
 }
 
 function brc_get_countdown_target_iso() {
@@ -514,6 +547,11 @@ function brc_sc_facebook_group() {
 	return esc_url( $s['facebook_group'] );
 }
 add_shortcode( 'brc_facebook_group', 'brc_sc_facebook_group' );
+
+function brc_sc_sponsor_form_link() {
+	return esc_url( brc_get_sponsor_cta_url() );
+}
+add_shortcode( 'brc_sponsor_form_link', 'brc_sc_sponsor_form_link' );
 
 function brc_sc_event_date() {
 	return esc_html( brc_get_theme_settings()['event_date'] );
