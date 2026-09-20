@@ -42,13 +42,20 @@ get_header();
 			echo '</div></div>';
 		}
 	endwhile;
-
-	if ( shortcode_exists( 'reunion_registration_form' ) ) {
-		echo do_shortcode( '[reunion_registration_form]' );
-	} else {
-		echo do_shortcode( '[reunion_form]' );
-	}
 	?>
+
+	<!-- ফর্মের চারপাশের মারুন ব্যাকগ্রাউন্ড এবং নিচের পর্যাপ্ত প্যাডিংয়ের জন্য র‍্যাপার -->
+    <div class="relative bg-maroon overflow-hidden pb-24">
+        <div class="relative max-w-4xl mx-auto px-5 sm:px-8">
+            <?php
+            if ( shortcode_exists( 'reunion_registration_form' ) ) {
+                echo do_shortcode( '[reunion_registration_form]' );
+            } else {
+                echo do_shortcode( '[reunion_form]' );
+            }
+            ?>
+        </div>
+    </div>
 
 <?php
 get_footer();

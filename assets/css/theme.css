@@ -839,3 +839,103 @@ body.admin-bar .site-header {
     top: 46px !important; /* মোবাইল বা ট্যাবলেটে অ্যাডমিন বারের উচ্চতা ৪৬ পিক্সেল */
   }
 }
+
+/* ── Hover snap fix: logos + CTA buttons ── */
+/* 1) Header & footer logo "স্মৃতির আঙিনায় '২৬" — lock paper + gold gradient on hover/focus/active */
+#siteHeader a.font-display,
+footer a.inline-flex.font-display {
+  transition:
+    color 0.3s ease,
+    filter 0.3s ease,
+    opacity 0.3s ease;
+}
+#siteHeader a.font-display:hover,
+#siteHeader a.font-display:focus-visible,
+#siteHeader a.font-display:active,
+footer a.inline-flex.font-display:hover,
+footer a.inline-flex.font-display:focus-visible,
+footer a.inline-flex.font-display:active {
+  color: #f8efdb !important;
+}
+#siteHeader a.font-display:hover .gold-text,
+#siteHeader a.font-display:focus-visible .gold-text,
+#siteHeader a.font-display:active .gold-text,
+footer a.inline-flex.font-display:hover .gold-text,
+footer a.inline-flex.font-display:focus-visible .gold-text,
+footer a.inline-flex.font-display:active .gold-text {
+  background: linear-gradient(115deg, #f9e7b0 0%, #eab85a 38%, #c68a24 62%, #f4d68f 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+#siteHeader a.font-display:hover .text-gold,
+#siteHeader a.font-display:focus-visible .text-gold,
+#siteHeader a.font-display:active .text-gold,
+footer a.inline-flex.font-display:hover .f2026-brand-mark,
+footer a.inline-flex.font-display:focus-visible .f2026-brand-mark,
+footer a.inline-flex.font-display:active .f2026-brand-mark {
+  color: #e7b24c !important;
+  -webkit-text-fill-color: #e7b24c !important;
+}
+
+/* 2) Hero ghost button "দিনের রূপরেখা→" — keep paper text, only tint bg + gold border on hover */
+#heroCtas a.btn-ghost.link-arrow {
+  color: #f8efdb !important;
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease,
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+#heroCtas a.btn-ghost.link-arrow:hover,
+#heroCtas a.btn-ghost.link-arrow:focus-visible {
+  background: rgba(231, 178, 76, 0.12) !important;
+  background-color: rgba(231, 178, 76, 0.12) !important;
+  border-color: #e7b24c !important;
+  color: #f8efdb !important;
+  transform: translateY(-2px);
+}
+#heroCtas a.btn-ghost.link-arrow:active {
+  transform: translateY(0) scale(0.98);
+  color: #f8efdb !important;
+}
+#heroCtas a.btn-ghost.link-arrow .arw {
+  color: currentColor !important;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* 3) Sponsors button "স্পন্সর হতে চাই→" — maroon to ink, text always paper, no snap */
+#sponsors a.link-arrow.bg-maroon {
+  background: #7e1e2a !important;
+  background-color: #7e1e2a !important;
+  color: #f8efdb !important;
+  border-color: transparent !important;
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease,
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+#sponsors a.link-arrow.bg-maroon:hover,
+#sponsors a.link-arrow.bg-maroon:focus-visible {
+  background: #150e0a !important;
+  background-color: #150e0a !important;
+  color: #f8efdb !important;
+  border-color: transparent !important;
+  transform: translateY(-2px);
+}
+#sponsors a.link-arrow.bg-maroon:active {
+  background: #150e0a !important;
+  background-color: #150e0a !important;
+  color: #f8efdb !important;
+  transform: translateY(0) scale(0.98);
+}
+#sponsors a.link-arrow.bg-maroon .arw {
+  color: currentColor !important;
+}
+
+/* Hide "আমাদের সম্পূর্ণ গল্প পড়ুন→" — no gap on any device */
+#about a.link-arrow {
+  display: none !important;
+}
