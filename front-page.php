@@ -280,13 +280,24 @@ $brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 					</div>
 				<?php endwhile; ?>
 			</div>
-				<?php wp_reset_postdata(); endif; ?>
+				<?php wp_reset_postdata(); ?>
 			<div class="mt-16 text-center sponsor-anim">
 				<p class="text-ink/60 leading-[1.7]"><?php esc_html_e( 'আপনার প্রতিষ্ঠানও এই আয়োজনের অংশ হতে চায়?', 'bagbari-reunion-sejan' ); ?></p>
 				<a href="mailto:sponsor@bagbari-reunion.com" class="link-arrow inline-flex items-center gap-2 mt-5 rounded-full bg-maroon text-paper font-semibold px-7 py-3.5 hover:bg-ink transition-colors">
 					<?php esc_html_e( 'স্পন্সর হতে চাই', 'bagbari-reunion-sejan' ); ?> <span class="arw" aria-hidden="true">→</span>
 				</a>
 			</div>
+			<?php else : ?>
+			<div class="mt-12 sm:mt-14 max-w-xl mx-auto">
+				<div class="bg-white/60 border border-amber-900/10 rounded-xl p-8 sm:p-10 text-center flex flex-col items-center gap-4 sponsor-card">
+					<p class="font-display text-2xl sm:text-3xl leading-tight text-maroon"><?php esc_html_e( 'আমাদের প্রথম স্পন্সর হওয়ার সুযোগ নিন!', 'bagbari-reunion-sejan' ); ?></p>
+					<p class="text-ink/70 leading-[1.7] max-w-md"><?php esc_html_e( 'আপনার প্রতিষ্ঠানও এই আয়োজনের অংশ হতে চায়?', 'bagbari-reunion-sejan' ); ?></p>
+					<a href="mailto:sponsor@bagbari-reunion.com" class="link-arrow mt-2 inline-flex items-center gap-2 rounded-full bg-maroon text-paper font-semibold px-7 py-3.5 hover:bg-ink transition-colors">
+						<?php esc_html_e( 'স্পন্সর হতে চাই', 'bagbari-reunion-sejan' ); ?> <span class="arw" aria-hidden="true">→</span>
+					</a>
+				</div>
+			</div>
+			<?php endif; ?>
 		</div>
 	</section>
 
