@@ -166,3 +166,109 @@ function brc_reunion_form_shortcode() {
 	return (string) ob_get_clean();
 }
 add_shortcode( 'reunion_form', 'brc_reunion_form_shortcode' );
+
+/* ------------------------------------------------------------------ */
+/* Theme Settings — Admin Menu + Settings API (no plugins / ACF)       */
+/* ------------------------------------------------------------------ */
+define( 'BRC_SETTINGS_OPTION', 'brc_theme_settings' );
+define( 'BRC_SETTINGS_GROUP', 'brc_settings_group' );
+define( 'BRC_SETTINGS_PAGE', 'brc-theme-settings' );
+
+add_action( 'admin_menu', 'brc_register_theme_settings_menu' );
+function brc_register_theme_settings_menu() {
+	add_menu_page(
+		__( 'Theme Settings', 'bagbari-reunion-sejan' ),
+		__( 'Theme Settings', 'bagbari-reunion-sejan' ),
+		'manage_options',
+		BRC_SETTINGS_PAGE,
+		'brc_render_theme_settings_page',
+		'dashicons-admin-generic',
+		61
+	);
+}
+
+add_action( 'admin_init', 'brc_register_theme_settings' );
+function brc_register_theme_settings() {
+	register_setting(
+		BRC_SETTINGS_GROUP,
+		BRC_SETTINGS_OPTION,
+		array(
+			'type'              => 'array',
+			'sanitize_callback' => 'brc_sanitize_theme_settings',
+			'default'           => array(),
+		)
+	);
+
+	add_settings_section(
+		'brc_general_section',
+		__( 'General Settings', 'bagbari-reunion-sejan' ),
+		'brc_general_section_cb',
+		BRC_SETTINGS_PAGE
+	);
+
+	add_settings_field(
+		'phone',
+		__( 'Contact Phone', 'bagbari-reunion-sejan' ),
+		'brc_render_text_field',
+		BRC_SETTINGS_PAGE,
+		'brc_general_section',
+		array( 'id' => 'phone', 'placeholder' => '01793-548365' )
+	);
+
+	add_settings_field(
+		'email',
+		__( 'Contact Email', 'bagbari-reunion-sejan' ),
+		'brc_render_text_field',
+		BRC_SETTINGS_PAGE,
+		'brc_general_section',
+		array( 'id' => 'email', 'type' => 'email', 'placeholder' => 'help@example.com' )
+	);
+}
+
+function brc_general_section_cb() {
+	echo '<p>' . esc_html__( 'Manage global theme options. All fields are safely stored via Settings API.', 'bagbari-reunion-sejan' ) . '</p>';
+}
+
+function brc_render_text_field( $args ) {
+	$options = get_option( BRC_SETTINGS_OPTION, array() );
+	$id      = $args['id'];
+	$type    = $args['type'] ?? 'text';
+	$value   = $options[ $id ] ?? '';
+	printf(
+		'<input type="%1$s" name="%2$s[%3$s]" value="%4$s" class="regular-text" placeholder="%5$s" />',
+		esc_attr( $type ),
+		esc_attr( BRC_SETTINGS_OPTION ),
+		esc_attr( $id ),
+		esc_attr( $value ),
+		esc_attr( $args['placeholder'] ?? '' )
+	);
+}
+
+function brc_sanitize_theme_settings( $input ) {
+	$output = array();
+	if ( isset( $input['phone'] ) ) {
+		$output['phone'] = sanitize_text_field( $input['phone'] );
+	}
+	if ( isset( $input['email'] ) ) {
+		$output['email'] = sanitize_email( $input['email'] );
+	}
+	return $output;
+}
+
+function brc_render_theme_settings_page() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	?>
+	<div class="wrap">
+		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+		<form action="options.php" method="post">
+			<?php
+			settings_fields( BRC_SETTINGS_GROUP );
+			do_settings_sections( BRC_SETTINGS_PAGE );
+			submit_button( __( 'Save Settings', 'bagbari-reunion-sejan' ) );
+			?>
+		</form>
+	</div>
+	<?php
+}
