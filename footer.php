@@ -13,6 +13,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 $home_url     = home_url( '/' );
 $register_url = brc_get_register_url();
 $about_url    = home_url( '/#about' );
+
+$brc_settings      = function_exists( 'brc_get_theme_settings' ) ? brc_get_theme_settings() : array( 'phone' => '', 'email' => '', 'facebook_page' => '', 'facebook_group' => '' );
+$brc_phone_display = ! empty( $brc_settings['phone'] ) ? $brc_settings['phone'] : '01793 - 548 365';
+$brc_phone_raw     = preg_replace( '/[^0-9+]/', '', $brc_phone_display );
+if ( preg_match( '/^0\d+$/', $brc_phone_raw ) ) {
+	$brc_phone_href = 'tel:+88' . $brc_phone_raw;
+} else {
+	$brc_phone_href = 'tel:' . $brc_phone_raw;
+}
+$brc_email    = ! empty( $brc_settings['email'] ) ? $brc_settings['email'] : 'help@bagbari-reunion.com';
+$brc_fb_page  = ! empty( $brc_settings['facebook_page'] ) ? $brc_settings['facebook_page'] : '';
+$brc_fb_group = ! empty( $brc_settings['facebook_group'] ) ? $brc_settings['facebook_group'] : '';
 ?>
 	<footer class="relative overflow-hidden" style="background:linear-gradient(180deg,#20070b 0%,#160407 100%)">
 		<div class="f2026-line" aria-hidden="true"></div>
@@ -35,29 +47,35 @@ $about_url    = home_url( '/#about' );
 
 				<div class="f2026-reveal text-center" style="--d:.12s">
 					<div class="flex flex-row flex-wrap items-center justify-center gap-2.5 sm:gap-3">
-						<a href="tel:+8801793548365" class="f2026-pill">
+						<a href="<?php echo esc_url( $brc_phone_href ); ?>" class="f2026-pill">
 							<span class="f2026-ico" aria-hidden="true">
 								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
 							</span>
-							<span dir="ltr"><?php esc_html_e( '01793 - 548 365', 'bagbari-reunion-sejan' ); ?></span>
+							<span dir="ltr"><?php echo esc_html( $brc_phone_display ); ?></span>
 						</a>
-						<a href="mailto:help@bagbari-reunion.com" class="f2026-pill">
+						<a href="<?php echo esc_url( 'mailto:' . $brc_email ); ?>" class="f2026-pill">
 							<span class="f2026-ico" aria-hidden="true">
 								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
 							</span>
-							<span>help@bagbari-reunion.com</span>
+							<span><?php echo esc_html( $brc_email ); ?></span>
 						</a>
 					</div>
+					<?php if ( $brc_fb_page || $brc_fb_group ) : ?>
 					<div class="mt-4 flex flex-wrap items-center justify-center gap-x-7 gap-y-2">
-						<a href="#" target="_blank" rel="noopener noreferrer" class="f2026-fb">
+						<?php if ( $brc_fb_page ) : ?>
+						<a href="<?php echo esc_url( $brc_fb_page ); ?>" target="_blank" rel="noopener noreferrer" class="f2026-fb">
 							<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7h2.4l.4-3h-2.8V9.1c0-.9.3-1.5 1.6-1.5h1.3V4.9c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8V11H8v3h2.5v7h3Z" /></svg>
 							<?php esc_html_e( 'ফেসবুক পেজ', 'bagbari-reunion-sejan' ); ?>
 						</a>
-						<a href="#" target="_blank" rel="noopener noreferrer" class="f2026-fb">
+						<?php endif; ?>
+						<?php if ( $brc_fb_group ) : ?>
+						<a href="<?php echo esc_url( $brc_fb_group ); ?>" target="_blank" rel="noopener noreferrer" class="f2026-fb">
 							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
 							<?php esc_html_e( 'ফেসবুক গ্রুপ', 'bagbari-reunion-sejan' ); ?>
 						</a>
+						<?php endif; ?>
 					</div>
+					<?php endif; ?>
 				</div>
 
 				<nav class="f2026-reveal text-center md:col-span-2 lg:col-span-1 lg:text-right lg:justify-self-end" style="--d:.2s" aria-label="<?php echo esc_attr__( 'ফুটার নেভিগেশন', 'bagbari-reunion-sejan' ); ?>">

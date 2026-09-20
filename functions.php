@@ -200,9 +200,16 @@ function brc_register_theme_settings() {
 	);
 
 	add_settings_section(
-		'brc_general_section',
-		__( 'General Settings', 'bagbari-reunion-sejan' ),
-		'brc_general_section_cb',
+		'brc_contact_section',
+		__( 'Contact Information', 'bagbari-reunion-sejan' ),
+		'brc_contact_section_cb',
+		BRC_SETTINGS_PAGE
+	);
+
+	add_settings_section(
+		'brc_social_section',
+		__( 'Social Links', 'bagbari-reunion-sejan' ),
+		'brc_social_section_cb',
 		BRC_SETTINGS_PAGE
 	);
 
@@ -211,8 +218,8 @@ function brc_register_theme_settings() {
 		__( 'Contact Phone', 'bagbari-reunion-sejan' ),
 		'brc_render_text_field',
 		BRC_SETTINGS_PAGE,
-		'brc_general_section',
-		array( 'id' => 'phone', 'placeholder' => '01793-548365' )
+		'brc_contact_section',
+		array( 'id' => 'phone', 'placeholder' => '01793-548365', 'desc' => __( 'Shown in footer. Include country code for tel: link.', 'bagbari-reunion-sejan' ) )
 	);
 
 	add_settings_field(
@@ -220,9 +227,35 @@ function brc_register_theme_settings() {
 		__( 'Contact Email', 'bagbari-reunion-sejan' ),
 		'brc_render_text_field',
 		BRC_SETTINGS_PAGE,
-		'brc_general_section',
-		array( 'id' => 'email', 'type' => 'email', 'placeholder' => 'help@example.com' )
+		'brc_contact_section',
+		array( 'id' => 'email', 'type' => 'email', 'placeholder' => 'help@bagbari-reunion.com' )
 	);
+
+	add_settings_field(
+		'facebook_page',
+		__( 'Facebook Page Link', 'bagbari-reunion-sejan' ),
+		'brc_render_text_field',
+		BRC_SETTINGS_PAGE,
+		'brc_social_section',
+		array( 'id' => 'facebook_page', 'type' => 'url', 'placeholder' => 'https://facebook.com/your-page' )
+	);
+
+	add_settings_field(
+		'facebook_group',
+		__( 'Facebook Group Link', 'bagbari-reunion-sejan' ),
+		'brc_render_text_field',
+		BRC_SETTINGS_PAGE,
+		'brc_social_section',
+		array( 'id' => 'facebook_group', 'type' => 'url', 'placeholder' => 'https://facebook.com/groups/your-group' )
+	);
+}
+
+function brc_contact_section_cb() {
+	echo '<p>' . esc_html__( 'Contact details displayed in the footer and across the site.', 'bagbari-reunion-sejan' ) . '</p>';
+}
+
+function brc_social_section_cb() {
+	echo '<p>' . esc_html__( 'Social profile URLs displayed in the footer. Leave empty to hide.', 'bagbari-reunion-sejan' ) . '</p>';
 }
 
 function brc_general_section_cb() {
@@ -242,6 +275,9 @@ function brc_render_text_field( $args ) {
 		esc_attr( $value ),
 		esc_attr( $args['placeholder'] ?? '' )
 	);
+	if ( ! empty( $args['desc'] ) ) {
+		printf( '<p class="description">%s</p>', esc_html( $args['desc'] ) );
+	}
 }
 
 function brc_sanitize_theme_settings( $input ) {
@@ -252,8 +288,75 @@ function brc_sanitize_theme_settings( $input ) {
 	if ( isset( $input['email'] ) ) {
 		$output['email'] = sanitize_email( $input['email'] );
 	}
+	if ( isset( $input['facebook_page'] ) ) {
+		$output['facebook_page'] = esc_url_raw( trim( $input['facebook_page'] ) );
+	}
+	if ( isset( $input['facebook_group'] ) ) {
+		$output['facebook_group'] = esc_url_raw( trim( $input['facebook_group'] ) );
+	}
 	return $output;
 }
+
+function brc_get_theme_settings() {
+	$defaults = array(
+		'phone'          => '',
+		'email'          => '',
+		'facebook_page'  => '',
+		'facebook_group' => '',
+	);
+	return wp_parse_args( (array) get_option( BRC_SETTINGS_OPTION, array() ), $defaults );
+}
+
+function brc_get_phone_href( $phone_display ) {
+	$raw = preg_replace( '/[^0-9+]/', '', (string) $phone_display );
+	if ( '' === $raw ) {
+		return '';
+	}
+	if ( preg_match( '/^0\d+$/', $raw ) ) {
+		return 'tel:+88' . $raw;
+	}
+	return 'tel:' . $raw;
+}
+
+function brc_sc_phone() {
+	$s = brc_get_theme_settings();
+	$val = ! empty( $s['phone'] ) ? $s['phone'] : '01793 - 548 365';
+	return esc_html( $val );
+}
+add_shortcode( 'brc_phone', 'brc_sc_phone' );
+
+function brc_sc_phone_url() {
+	$s = brc_get_theme_settings();
+	$val = ! empty( $s['phone'] ) ? $s['phone'] : '01793 - 548 365';
+	return esc_url( brc_get_phone_href( $val ) );
+}
+add_shortcode( 'brc_phone_url', 'brc_sc_phone_url' );
+
+function brc_sc_email() {
+	$s = brc_get_theme_settings();
+	$val = ! empty( $s['email'] ) ? $s['email'] : 'help@bagbari-reunion.com';
+	return esc_html( $val );
+}
+add_shortcode( 'brc_email', 'brc_sc_email' );
+
+function brc_sc_email_url() {
+	$s = brc_get_theme_settings();
+	$val = ! empty( $s['email'] ) ? $s['email'] : 'help@bagbari-reunion.com';
+	return esc_url( 'mailto:' . $val );
+}
+add_shortcode( 'brc_email_url', 'brc_sc_email_url' );
+
+function brc_sc_facebook_page() {
+	$s = brc_get_theme_settings();
+	return esc_url( $s['facebook_page'] );
+}
+add_shortcode( 'brc_facebook_page', 'brc_sc_facebook_page' );
+
+function brc_sc_facebook_group() {
+	$s = brc_get_theme_settings();
+	return esc_url( $s['facebook_group'] );
+}
+add_shortcode( 'brc_facebook_group', 'brc_sc_facebook_group' );
 
 function brc_render_theme_settings_page() {
 	if ( ! current_user_can( 'manage_options' ) ) {
