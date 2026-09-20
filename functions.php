@@ -35,6 +35,38 @@ function brc_setup() {
 }
 add_action( 'after_setup_theme', 'brc_setup' );
 
+function brc_register_sponsors_cpt() {
+	$labels = array(
+		'name'               => __( 'Sponsors', 'bagbari-reunion-sejan' ),
+		'singular_name'      => __( 'Sponsor', 'bagbari-reunion-sejan' ),
+		'menu_name'          => __( 'Sponsors', 'bagbari-reunion-sejan' ),
+		'name_admin_bar'     => __( 'Sponsor', 'bagbari-reunion-sejan' ),
+		'add_new'            => __( 'Add New', 'bagbari-reunion-sejan' ),
+		'add_new_item'       => __( 'Add New Sponsor', 'bagbari-reunion-sejan' ),
+		'new_item'           => __( 'New Sponsor', 'bagbari-reunion-sejan' ),
+		'edit_item'          => __( 'Edit Sponsor', 'bagbari-reunion-sejan' ),
+		'view_item'          => __( 'View Sponsor', 'bagbari-reunion-sejan' ),
+		'all_items'          => __( 'All Sponsors', 'bagbari-reunion-sejan' ),
+		'search_items'       => __( 'Search Sponsors', 'bagbari-reunion-sejan' ),
+		'not_found'          => __( 'No sponsors found.', 'bagbari-reunion-sejan' ),
+		'not_found_in_trash' => __( 'No sponsors found in Trash.', 'bagbari-reunion-sejan' ),
+	);
+	$args = array(
+		'labels'             => $labels,
+		'public'             => true,
+		'has_archive'        => false,
+		'show_ui'            => true,
+		'show_in_menu'       => true,
+		'show_in_rest'       => true,
+		'menu_icon'          => 'dashicons-heart',
+		'supports'           => array( 'title', 'thumbnail', 'page-attributes' ),
+		'rewrite'            => array( 'slug' => 'sponsors' ),
+		'capability_type'    => 'post',
+	);
+	register_post_type( 'sponsors', $args );
+}
+add_action( 'init', 'brc_register_sponsors_cpt' );
+
 /**
  * Enqueue parent + child styles, GSAP, and theme assets.
  */

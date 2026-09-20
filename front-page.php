@@ -264,32 +264,23 @@ $brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 				<h2 class="font-display text-3xl sm:text-4xl md:text-[2.75rem] leading-[1.45] py-2 mt-2"><?php esc_html_e( 'যাদের পাশে থাকায় সম্ভব এই আয়োজন', 'bagbari-reunion-sejan' ); ?></h2>
 				<p class="text-ink/70 max-w-2xl mx-auto leading-[1.7]"><?php esc_html_e( "প্রাক্তন শিক্ষার্থী ও শুভানুধ্যায়ী প্রতিষ্ঠানগুলোর অকুণ্ঠ পৃষ্ঠপোষকতায় গড়ে উঠছে স্মৃতির আঙিনায় '২৬।", 'bagbari-reunion-sejan' ); ?></p>
 			</div>
+			<?php
+			$sponsors_q = new WP_Query( array( 'post_type' => 'sponsors', 'posts_per_page' => -1, 'orderby' => 'menu_order', 'order' => 'ASC', 'no_found_rows' => true, 'update_post_meta_cache' => false, 'update_post_term_cache' => false ) );
+			if ( $sponsors_q->have_posts() ) :
+				?>
 			<div class="mt-12 sm:mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-				<?php
-				$sponsors = array(
-					array( 'logo1.jpg', 'সোনালী গ্রুপ' ),
-					array( 'logo2.jpg', 'Automattic' ),
-					array( 'logo3.webp', 'Bluehost' ),
-					array( 'logo5.jpg', 'FluentCart' ),
-					array( 'logo6.jpg', 'FlyWP' ),
-					array( 'logo7.jpg', 'Hostinger' ),
-					array( 'logo8.jpg', 'Kirki' ),
-					array( 'logo9.jpg', 'OneSuite' ),
-					array( 'logo10.png', 'WooCommerce' ),
-					array( 'logo11.jpg', 'সোনালী এফএম' ),
-					array( 'logo12.jpg', 'উত্তরবঙ্গ নিউজ' ),
-					array( 'logo4.webp', 'বগুড়া টাইমস' ),
-				);
-				foreach ( $sponsors as $sponsor ) :
-					?>
+				<?php while ( $sponsors_q->have_posts() ) : $sponsors_q->the_post(); ?>
 					<div class="sponsor-card sponsor-anim bg-white/60 border border-amber-900/10 rounded-xl p-5 flex flex-col items-center text-center gap-3 transition-all duration-300 hover:border-maroon/35 hover:scale-[1.03]">
 						<div class="h-20 md:h-24 w-full flex items-center justify-center">
-							<img src="<?php echo esc_url( $assets_uri . '/' . $sponsor[0] ); ?>" alt="<?php echo esc_attr( $sponsor[1] ); ?>" loading="lazy" decoding="async" class="sponsor-logo max-h-full max-w-full object-contain">
+							<?php if ( has_post_thumbnail() ) : ?>
+								<?php echo get_the_post_thumbnail( get_the_ID(), 'medium', array( 'class' => 'sponsor-logo max-h-full max-w-full object-contain', 'loading' => 'lazy', 'decoding' => 'async', 'alt' => get_the_title() ) ); ?>
+							<?php endif; ?>
 						</div>
-						<p class="font-display text-lg leading-[1.5] py-0.5"><?php echo esc_html( $sponsor[1] ); ?></p>
+						<p class="font-display text-lg leading-[1.5] py-0.5"><?php echo esc_html( get_the_title() ); ?></p>
 					</div>
-				<?php endforeach; ?>
+				<?php endwhile; ?>
 			</div>
+				<?php wp_reset_postdata(); endif; ?>
 			<div class="mt-16 text-center sponsor-anim">
 				<p class="text-ink/60 leading-[1.7]"><?php esc_html_e( 'আপনার প্রতিষ্ঠানও এই আয়োজনের অংশ হতে চায়?', 'bagbari-reunion-sejan' ); ?></p>
 				<a href="mailto:sponsor@bagbari-reunion.com" class="link-arrow inline-flex items-center gap-2 mt-5 rounded-full bg-maroon text-paper font-semibold px-7 py-3.5 hover:bg-ink transition-colors">
