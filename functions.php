@@ -155,6 +155,27 @@ function brc_enqueue_reunion_form_assets() {
 }
 
 /**
+ * Enqueue the WordPress Media Library on the Theme Settings page
+ * so gallery image upload/remove buttons work.
+ */
+function brc_enqueue_admin_assets( $hook ) {
+	// The page is registered with add_menu_page(), so its admin hook is
+	// "toplevel_page_{slug}". Match on "page_{slug}" to cover it robustly.
+	if ( false === strpos( $hook, 'page_' . BRC_SETTINGS_PAGE ) ) {
+		return;
+	}
+	wp_enqueue_media();
+	wp_enqueue_script(
+		'brc-admin',
+		get_stylesheet_directory_uri() . '/assets/js/admin.js',
+		array( 'jquery' ),
+		BRC_VERSION,
+		true
+	);
+}
+add_action( 'admin_enqueue_scripts', 'brc_enqueue_admin_assets' );
+
+/**
  * Style WP-managed primary menu links to match the theme design.
  *
  * @param array    $atts Menu link attributes.
@@ -349,6 +370,45 @@ function brc_register_theme_settings() {
 		'brc_sponsor_section',
 		array( 'id' => 'sponsor_form_link', 'type' => 'url', 'placeholder' => 'https://forms.gle/... or https://...', 'desc' => __( 'Google Form or contact URL for "স্পন্সর হতে চাই". Opens in new tab. Leave empty to use mailto fallback.', 'bagbari-reunion-sejan' ) )
 	);
+
+	add_settings_section(
+		'brc_canvas_section',
+		__( 'স্মৃতির ক্যানভাস - Gallery Settings', 'bagbari-reunion-sejan' ),
+		'brc_canvas_section_cb',
+		BRC_SETTINGS_PAGE
+	);
+
+	$canvas_items = array(
+		1 => array( 'label' => '১ নম্বর ছবি (Top Left)',      'title' => 'আমাদের সেই প্রিয় ক্লাসরুম' ),
+		2 => array( 'label' => '২ নম্বর ছবি (Top Middle)',    'title' => 'বিজয়ী হাসি আর আমাদের গল্প' ),
+		3 => array( 'label' => '৩ নম্বর ছবি (Top Right)',     'title' => 'স্কুল বারান্দায় জমিয়ে রাখা আমাদের গল্প' ),
+		4 => array( 'label' => '৪ নম্বর ছবি (Bottom Left)',   'title' => 'সিঁড়িতে বসা সেই পড়ালেখার দিনগুলো' ),
+		5 => array( 'label' => '৫ নম্বর ছবি (Bottom Middle)', 'title' => 'বিকেলের ফুটবল আর বিজয়ের উল্লাস' ),
+		6 => array( 'label' => '৬ নম্বর ছবি (Bottom Right)',  'title' => 'এক ফ্রেমে বন্দি শৈশবের শুদ্ধ আনন্দ' ),
+	);
+
+	foreach ( $canvas_items as $num => $info ) {
+		add_settings_field(
+			'canvas_img_' . $num,
+			sprintf( __( 'Item %d — %s', 'bagbari-reunion-sejan' ), $num, $info['label'] ),
+			'brc_render_image_field',
+			BRC_SETTINGS_PAGE,
+			'brc_canvas_section',
+			array(
+				'id'       => 'canvas_img_' . $num,
+				'desc'     => sprintf( __( 'Gallery image #%d. Leave empty to use the default theme image.', 'bagbari-reunion-sejan' ), $num ),
+			)
+		);
+
+		add_settings_field(
+			'canvas_title_' . $num,
+			sprintf( __( 'Item %d — Title Text', 'bagbari-reunion-sejan' ), $num ),
+			'brc_render_text_field',
+			BRC_SETTINGS_PAGE,
+			'brc_canvas_section',
+			array( 'id' => 'canvas_title_' . $num )
+		);
+	}
 }
 
 function brc_event_section_cb() {
@@ -365,6 +425,40 @@ function brc_social_section_cb() {
 
 function brc_sponsor_section_cb() {
 	echo '<p>' . esc_html__( 'Sponsor inquiry form URL used by both "স্পন্সর হতে চাই" buttons.', 'bagbari-reunion-sejan' ) . '</p>';
+}
+
+function brc_canvas_section_cb() {
+	echo '<p>' . esc_html__( 'স্মৃতির ক্যানভাস gallery images and captions. Upload a custom image and set a title for each of the 6 gallery items. Leave an image empty to use the default theme image.', 'bagbari-reunion-sejan' ) . '</p>';
+}
+
+/**
+ * Render an image upload field with WordPress Media Library integration.
+ *
+ * @param array $args Field arguments: id, placeholder, desc.
+ */
+function brc_render_image_field( $args ) {
+	$options = get_option( BRC_SETTINGS_OPTION, array() );
+	$id      = $args['id'];
+	$value   = isset( $options[ $id ] ) ? $options[ $id ] : '';
+	printf(
+		'<div class="brc-image-field" style="margin-bottom: 12px;">' .
+		'<input type="hidden" name="%1$s[%2$s]" id="%2$s" value="%3$s" class="brc-image-value" />' .
+		'<div class="brc-image-preview" style="margin-bottom: 8px;">%4$s</div>' .
+		'<div>' .
+		'<button type="button" class="button brc-upload-btn">%5$s</button> ' .
+		'<button type="button" class="button brc-remove-btn">%6$s</button>' .
+		'</div>' .
+		'</div>',
+		esc_attr( BRC_SETTINGS_OPTION ),
+		esc_attr( $id ),
+		esc_attr( $value ),
+		( $value ? sprintf( '<img src="%s" style="max-width:120px;max-height:120px;border:1px solid #ddd;padding:3px;" />', esc_url( $value ) ) : '' ),
+		esc_html__( 'Upload Image', 'bagbari-reunion-sejan' ),
+		esc_html__( 'Remove', 'bagbari-reunion-sejan' )
+	);
+	if ( ! empty( $args['desc'] ) ) {
+		printf( '<p class="description">%s</p>', esc_html( $args['desc'] ) );
+	}
 }
 
 function brc_general_section_cb() {
@@ -457,6 +551,14 @@ function brc_sanitize_theme_settings( $input ) {
 	if ( isset( $input['sponsor_form_link'] ) ) {
 		$output['sponsor_form_link'] = esc_url_raw( trim( $input['sponsor_form_link'] ) );
 	}
+	for ( $i = 1; $i <= 6; $i++ ) {
+		if ( isset( $input['canvas_img_' . $i] ) ) {
+			$output['canvas_img_' . $i] = esc_url_raw( trim( $input['canvas_img_' . $i] ) );
+		}
+		if ( isset( $input['canvas_title_' . $i] ) ) {
+			$output['canvas_title_' . $i] = sanitize_text_field( $input['canvas_title_' . $i] );
+		}
+	}
 	return $output;
 }
 
@@ -472,8 +574,39 @@ function brc_get_theme_settings() {
 		'facebook_page'        => '',
 		'facebook_group'       => '',
 		'sponsor_form_link'    => '',
+		'canvas_img_1'         => get_stylesheet_directory_uri() . '/assets/classroom.webp',
+		'canvas_img_2'         => get_stylesheet_directory_uri() . '/assets/achive.webp',
+		'canvas_img_3'         => get_stylesheet_directory_uri() . '/assets/friends.webp',
+		'canvas_img_4'         => get_stylesheet_directory_uri() . '/assets/img1.jpg',
+		'canvas_img_5'         => get_stylesheet_directory_uri() . '/assets/football.webp',
+		'canvas_img_6'         => get_stylesheet_directory_uri() . '/assets/img2.webp',
+		'canvas_title_1'       => 'আমাদের সেই প্রিয় ক্লাসরুম',
+		'canvas_title_2'       => 'বিজয়ী হাসি আর আমাদের গল্প',
+		'canvas_title_3'       => 'স্কুল বারান্দায় জমিয়ে রাখা আমাদের গল্প',
+		'canvas_title_4'       => 'সিঁড়িতে বসা সেই পড়ালেখার দিনগুলো',
+		'canvas_title_5'       => 'বিকেলের ফুটবল আর বিজয়ের উল্লাস',
+		'canvas_title_6'       => 'এক ফ্রেমে বন্দि শৈশবের শুদ্ধ আনন্দ',
 	);
 	return wp_parse_args( (array) get_option( BRC_SETTINGS_OPTION, array() ), $defaults );
+}
+
+/**
+ * Get the স্মৃতির ক্যানভাস gallery items as an ordered array of
+ * ['image' => url, 'title' => text] pairs.
+ * Falls back to theme defaults when a field is empty.
+ *
+ * @return array{image:string,title:string}[]
+ */
+function brc_get_canvas_items() {
+	$s = brc_get_theme_settings();
+	return array(
+		1 => array( 'image' => esc_url( $s['canvas_img_1'] ),   'title' => esc_html( $s['canvas_title_1'] ) ),
+		2 => array( 'image' => esc_url( $s['canvas_img_2'] ),   'title' => esc_html( $s['canvas_title_2'] ) ),
+		3 => array( 'image' => esc_url( $s['canvas_img_3'] ),   'title' => esc_html( $s['canvas_title_3'] ) ),
+		4 => array( 'image' => esc_url( $s['canvas_img_4'] ),   'title' => esc_html( $s['canvas_title_4'] ) ),
+		5 => array( 'image' => esc_url( $s['canvas_img_5'] ),   'title' => esc_html( $s['canvas_title_5'] ) ),
+		6 => array( 'image' => esc_url( $s['canvas_img_6'] ),   'title' => esc_html( $s['canvas_title_6'] ) ),
+	);
 }
 
 function brc_get_sponsor_cta_url() {

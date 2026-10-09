@@ -220,30 +220,23 @@ $brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 			<p class="text-paper/75 max-w-xl mx-auto leading-relaxed"><?php esc_html_e( 'আমাদের গল্পের কিছু অমলিন মুহূর্ত — এক নজরে।', 'bagbari-reunion-sejan' ); ?></p>
 		</div>
 		<div class="max-w-6xl mx-auto px-5 sm:px-8 mt-20 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-			<div class="polaroid reveal-up -rotate-3">
-				<img src="<?php echo esc_url( $assets_uri . '/classroom.webp' ); ?>" width="600" height="450" loading="lazy" decoding="async" class="w-full h-56 object-cover" alt="<?php echo esc_attr__( 'ক্লাসরুম', 'bagbari-reunion-sejan' ); ?>">
-				<p class="font-display text-center text-ink/70 text-sm mt-3"><?php esc_html_e( 'আমাদের সেই প্রিয় ক্লাসরুম', 'bagbari-reunion-sejan' ); ?></p>
-			</div>
-			<div class="polaroid reveal-up rotate-2 sm:mt-10">
-				<img src="<?php echo esc_url( $assets_uri . '/achive.webp' ); ?>" width="600" height="450" loading="lazy" decoding="async" class="w-full h-56 object-cover" alt="<?php echo esc_attr__( 'বন্ধুদের আড্ডা', 'bagbari-reunion-sejan' ); ?>">
-				<p class="font-display text-center text-ink/70 text-sm mt-3"><?php esc_html_e( 'বিজয়ী হাসি আর আমাদের গল্প', 'bagbari-reunion-sejan' ); ?></p>
-			</div>
-			<div class="polaroid reveal-up -rotate-2">
-				<img src="<?php echo esc_url( $assets_uri . '/friends.webp' ); ?>" width="600" height="450" loading="lazy" decoding="async" class="w-full h-56 object-cover" alt="<?php echo esc_attr__( 'সমাবর্তন', 'bagbari-reunion-sejan' ); ?>">
-				<p class="font-display text-center text-ink/70 text-sm mt-3"><?php esc_html_e( 'স্কুল বারান্দায় জমিয়ে রাখা আমাদের গল্প', 'bagbari-reunion-sejan' ); ?></p>
-			</div>
-			<div class="polaroid reveal-up rotate-3">
-				<img src="<?php echo esc_url( $assets_uri . '/img1.jpg' ); ?>" width="600" height="450" loading="lazy" decoding="async" class="w-full h-56 object-cover" alt="<?php echo esc_attr__( 'লাইব্রেরি', 'bagbari-reunion-sejan' ); ?>">
-				<p class="font-display text-center text-ink/70 text-sm mt-3"><?php esc_html_e( 'সিঁড়িতে বসা সেই পড়ালেখার দিনগুলো', 'bagbari-reunion-sejan' ); ?></p>
-			</div>
-			<div class="polaroid reveal-up -rotate-2 sm:mt-10">
-				<img src="<?php echo esc_url( $assets_uri . '/football.webp' ); ?>" width="600" height="450" loading="lazy" decoding="async" class="w-full h-56 object-cover" alt="<?php echo esc_attr__( 'খেলার মাঠ', 'bagbari-reunion-sejan' ); ?>">
-				<p class="font-display text-center text-ink/70 text-sm mt-3"><?php esc_html_e( 'বিকেলের ফুটবল আর বিজয়ের উল্লাস', 'bagbari-reunion-sejan' ); ?></p>
-			</div>
-			<div class="polaroid reveal-up rotate-2">
-				<img src="<?php echo esc_url( $assets_uri . '/img2.webp' ); ?>" width="600" height="450" loading="lazy" decoding="async" class="w-full h-56 object-cover" alt="<?php echo esc_attr__( 'উৎসব', 'bagbari-reunion-sejan' ); ?>">
-				<p class="font-display text-center text-ink/70 text-sm mt-3"><?php esc_html_e( 'এক ফ্রেমে বন্দি শৈশবের শুদ্ধ আনন্দ', 'bagbari-reunion-sejan' ); ?></p>
-			</div>
+			<?php
+			$canvas_items     = brc_get_canvas_items();
+			$canvas_rotations = array(
+				1 => 'polaroid reveal-up -rotate-3',
+				2 => 'polaroid reveal-up rotate-2 sm:mt-10',
+				3 => 'polaroid reveal-up -rotate-2',
+				4 => 'polaroid reveal-up rotate-3',
+				5 => 'polaroid reveal-up -rotate-2 sm:mt-10',
+				6 => 'polaroid reveal-up rotate-2',
+			);
+			foreach ( $canvas_items as $i => $item ) :
+			?>
+				<div class="<?php echo esc_attr( $canvas_rotations[ $i ] ); ?>">
+					<img src="<?php echo esc_url( $item['image'] ); ?>" width="600" height="450" loading="lazy" decoding="async" class="w-full h-56 object-cover" alt="<?php echo esc_attr( $item['title'] ); ?>">
+					<p class="font-display text-center text-ink/70 text-sm mt-3"><?php echo esc_html( $item['title'] ); ?></p>
+				</div>
+			<?php endforeach; ?>
 		</div>
 	</section>
 
