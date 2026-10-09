@@ -121,12 +121,14 @@ function brc_enqueue_assets() {
 		true
 	);
 
-	$brc_countdown_iso = function_exists( 'brc_get_countdown_target_iso' ) ? brc_get_countdown_target_iso() : apply_filters( 'brc_countdown_target', '2026-11-25T09:00:00+06:00' );
+	$brc_countdown_iso   = function_exists( 'brc_get_countdown_target_iso' ) ? brc_get_countdown_target_iso() : apply_filters( 'brc_countdown_target', '2026-11-25T09:00:00+06:00' );
+	$brc_countdown_mode  = function_exists( 'brc_get_countdown_mode' ) ? brc_get_countdown_mode() : 0;
 	wp_localize_script(
 		'brc-theme',
 		'BRC_THEME',
 		array(
 			'countdownTarget' => $brc_countdown_iso,
+			'countdownMode'   => $brc_countdown_mode,
 			'homeUrl'         => esc_url_raw( home_url( '/' ) ),
 		)
 	);
@@ -317,13 +319,32 @@ function brc_register_theme_settings() {
 		array( 'id' => 'pass_price', 'placeholder' => '৳১,০০০' )
 	);
 
+	add_settings_section(
+		'brc_countdown_section',
+		__( 'Countdown Controller', 'bagbari-reunion-sejan' ),
+		'brc_countdown_section_cb',
+		BRC_SETTINGS_PAGE
+	);
+
 	add_settings_field(
-		'registration_deadline',
-		__( 'Registration Deadline', 'bagbari-reunion-sejan' ),
+		'countdown_mode',
+		__( 'Countdown Mode', 'bagbari-reunion-sejan' ),
+		'brc_render_countdown_mode_field',
+		BRC_SETTINGS_PAGE,
+		'brc_countdown_section',
+		array(
+			'id'   => 'countdown_mode',
+			'desc' => __( 'Toggle OFF = Registration Countdown Mode (counts down to the registration deadline). Toggle ON = Event Date Countdown Mode (counts down to the main event start date & time).', 'bagbari-reunion-sejan' ),
+		)
+	);
+
+	add_settings_field(
+		'event_countdown_datetime',
+		__( 'Target Date & Time', 'bagbari-reunion-sejan' ),
 		'brc_render_datetime_field',
 		BRC_SETTINGS_PAGE,
-		'brc_event_section',
-		array( 'id' => 'registration_deadline', 'desc' => __( 'Controls the frontend countdown. Pick the exact deadline date & time.', 'bagbari-reunion-sejan' ) )
+		'brc_countdown_section',
+		array( 'id' => 'event_countdown_datetime', 'desc' => __( 'Controls the frontend countdown. Pick the exact date & time the countdown should target.', 'bagbari-reunion-sejan' ) )
 	);
 
 	add_settings_field(
@@ -415,6 +436,10 @@ function brc_event_section_cb() {
 	echo '<p>' . esc_html__( 'Central event details — update once, reflected everywhere (hero, banners, pricing, registration).', 'bagbari-reunion-sejan' ) . '</p>';
 }
 
+function brc_countdown_section_cb() {
+	echo '<p>' . esc_html__( 'Set the countdown mode and the exact target date & time. Toggle OFF counts down to the registration deadline; Toggle ON counts down to the main event start.', 'bagbari-reunion-sejan' ) . '</p>';
+}
+
 function brc_contact_section_cb() {
 	echo '<p>' . esc_html__( 'Contact details displayed in the footer and across the site.', 'bagbari-reunion-sejan' ) . '</p>';
 }
@@ -483,6 +508,22 @@ function brc_render_text_field( $args ) {
 	}
 }
 
+function brc_render_countdown_mode_field( $args ) {
+	$options = get_option( BRC_SETTINGS_OPTION, array() );
+	$id      = $args['id'];
+	$value   = ! empty( $options[ $id ] ) ? 1 : 0;
+	printf(
+		'<label for="%1$s"> <input type="checkbox" id="%1$s" name="%2$s[%1$s]" value="1" %3$s /> %4$s</label>',
+		esc_attr( $id ),
+		esc_attr( BRC_SETTINGS_OPTION ),
+		checked( 1, $value, false ),
+		esc_html__( 'Enable Event Date Countdown Mode', 'bagbari-reunion-sejan' )
+	);
+	if ( ! empty( $args['desc'] ) ) {
+		printf( '<p class="description">%s</p>', esc_html( $args['desc'] ) );
+	}
+}
+
 function brc_render_datetime_field( $args ) {
 	$options = get_option( BRC_SETTINGS_OPTION, array() );
 	$id      = $args['id'];
@@ -524,17 +565,24 @@ function brc_sanitize_theme_settings( $input ) {
 	if ( isset( $input['pass_price'] ) ) {
 		$output['pass_price'] = sanitize_text_field( $input['pass_price'] );
 	}
-	if ( isset( $input['registration_deadline'] ) ) {
-		$raw = trim( (string) $input['registration_deadline'] );
+	if ( isset( $input['event_countdown_datetime'] ) ) {
+		$raw = trim( (string) $input['event_countdown_datetime'] );
 		if ( '' === $raw ) {
-			$output['registration_deadline'] = '';
+			$output['event_countdown_datetime'] = '';
 		} elseif ( preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/', $raw ) ) {
 			$ts = strtotime( $raw );
-			$output['registration_deadline'] = false !== $ts ? gmdate( 'c', $ts ) : sanitize_text_field( $raw );
+			$output['event_countdown_datetime'] = false !== $ts ? gmdate( 'c', $ts ) : sanitize_text_field( $raw );
 		} else {
 			$ts = strtotime( $raw );
-			$output['registration_deadline'] = false !== $ts ? gmdate( 'c', $ts ) : sanitize_text_field( $raw );
+			$output['event_countdown_datetime'] = false !== $ts ? gmdate( 'c', $ts ) : sanitize_text_field( $raw );
 		}
+	}
+	if ( isset( $input['countdown_mode'] ) ) {
+		$output['countdown_mode'] = ! empty( $input['countdown_mode'] ) ? 1 : 0;
+	}
+	// Backward compatibility: keep sanitizing a legacy registration_deadline key if present.
+	if ( isset( $input['registration_deadline'] ) ) {
+		$output['registration_deadline'] = sanitize_text_field( $input['registration_deadline'] );
 	}
 	if ( isset( $input['phone'] ) ) {
 		$output['phone'] = sanitize_text_field( $input['phone'] );
@@ -568,8 +616,10 @@ function brc_get_theme_settings() {
 		'event_time'           => 'শুক্রবার, সকাল ৯:০০',
 		'event_location'       => 'স্কুল প্রাঙ্গণ, বাগবাড়ী, বগুড়া',
 		'pass_price'           => '৳১,০০০',
-		'registration_deadline' => '2026-11-25T09:00:00+06:00',
-		'phone'                => '',
+		'countdown_mode'           => 0,
+		'event_countdown_datetime' => '2026-11-25T09:00:00+06:00',
+		'registration_deadline'    => '',
+		'phone'                    => '',
 		'email'                => '',
 		'facebook_page'        => '',
 		'facebook_group'       => '',
@@ -587,7 +637,13 @@ function brc_get_theme_settings() {
 		'canvas_title_5'       => 'বিকেলের ফুটবল আর বিজয়ের উল্লাস',
 		'canvas_title_6'       => 'এক ফ্রেমে বন্দि শৈশবের শুদ্ধ আনন্দ',
 	);
-	return wp_parse_args( (array) get_option( BRC_SETTINGS_OPTION, array() ), $defaults );
+	$settings = wp_parse_args( (array) get_option( BRC_SETTINGS_OPTION, array() ), $defaults );
+	// Backward compatibility: if a legacy registration_deadline exists and the new
+	// unified target is empty, fall back to the legacy saved date.
+	if ( empty( $settings['event_countdown_datetime'] ) && ! empty( $settings['registration_deadline'] ) ) {
+		$settings['event_countdown_datetime'] = $settings['registration_deadline'];
+	}
+	return $settings;
 }
 
 /**
@@ -618,9 +674,14 @@ function brc_get_sponsor_cta_url() {
 	return 'mailto:' . $email;
 }
 
+function brc_get_countdown_mode() {
+	$s = brc_get_theme_settings();
+	return ! empty( $s['countdown_mode'] ) ? 1 : 0;
+}
+
 function brc_get_countdown_target_iso() {
 	$s   = brc_get_theme_settings();
-	$raw = trim( (string) ( $s['registration_deadline'] ?? '' ) );
+	$raw = trim( (string) ( $s['event_countdown_datetime'] ?? '' ) );
 	if ( '' !== $raw ) {
 		$ts = strtotime( $raw );
 		if ( false !== $ts ) {
@@ -629,6 +690,26 @@ function brc_get_countdown_target_iso() {
 	}
 	return apply_filters( 'brc_countdown_target', '2026-11-25T09:00:00+06:00' );
 }
+
+/**
+ * One-time migration: move a legacy saved "registration_deadline" into the new
+ * unified "event_countdown_datetime" key so existing saved dates stay intact.
+ */
+function brc_migrate_legacy_countdown() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$options = get_option( BRC_SETTINGS_OPTION, array() );
+	if ( empty( $options ) || ! is_array( $options ) ) {
+		return;
+	}
+	if ( empty( $options['event_countdown_datetime'] ) && ! empty( $options['registration_deadline'] ) ) {
+		$options['event_countdown_datetime'] = $options['registration_deadline'];
+		unset( $options['registration_deadline'] );
+		update_option( BRC_SETTINGS_OPTION, $options );
+	}
+}
+add_action( 'admin_init', 'brc_migrate_legacy_countdown' );
 
 function brc_get_phone_href( $phone_display ) {
 	$raw = preg_replace( '/[^0-9+]/', '', (string) $phone_display );
@@ -713,7 +794,7 @@ add_shortcode( 'theme_event_pass_price', 'brc_sc_pass_price' );
 
 function brc_sc_registration_deadline() {
 	$s   = brc_get_theme_settings();
-	$raw = $s['registration_deadline'];
+	$raw = $s['event_countdown_datetime'];
 	$ts  = strtotime( $raw );
 	if ( false !== $ts ) {
 		return esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $ts ) );
