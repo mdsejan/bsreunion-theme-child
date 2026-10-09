@@ -38,7 +38,7 @@ $brc_fb_group = ! empty( $brc_settings['facebook_group'] ) ? $brc_settings['face
 				<div class="f2026-reveal text-center lg:text-left" style="--d:.05s">
 					<a href="<?php echo esc_url( $home_url ); ?>" class="inline-flex items-center gap-2.5 font-display text-2xl sm:text-[1.65rem] text-paper">
 						<span class="f2026-brand-mark text-gold text-[1.35em] leading-none" aria-hidden="true">✺</span>
-						<span><?php esc_html_e( 'স্মৃতির আঙিনায়', 'bagbari-reunion-sejan' ); ?> <span class="gold-text gold-text-tight">'২৬</span></span>
+						<span><?php esc_html_e( 'শতবর্ষ পুনর্মিলনী', 'bagbari-reunion-sejan' ); ?> <span class="gold-text gold-text-tight">'২৬</span></span>
 					</a>
 					<p class="mt-3 max-w-xs mx-auto lg:mx-0 text-[15px] leading-[1.9] text-[#e2d5c3]/65">
 						<?php esc_html_e( "একদিনের জন্য ফিরে যাই কৈশোরের সোনালী আঙিনায়।", 'bagbari-reunion-sejan' ); ?>
@@ -95,7 +95,7 @@ $brc_fb_group = ! empty( $brc_settings['facebook_group'] ) ? $brc_settings['face
 
 		<div class="relative border-t border-[rgba(234,184,90,0.15)]">
 			<div class="relative max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left text-sm text-[#e2d5c3]/55">
-				<p class="leading-relaxed">© ২০২৬ <?php esc_html_e( "স্মৃতির আঙিনায় '২৬ - বাগবাড়ী কলিম মাহমুদ উচ্চ বিদ্যালয়। সকল অধিকার সংরক্ষিত।", 'bagbari-reunion-sejan' ); ?></p>
+				<p class="leading-relaxed">© ২০২৬ <?php esc_html_e( "শতবর্ষ পুনর্মিলনী '২৬ - বাগবাড়ী কলিম মাহমুদ উচ্চ বিদ্যালয়। সকল অধিকার সংরক্ষিত।", 'bagbari-reunion-sejan' ); ?></p>
 				<p class="shrink-0">Developed by <a href="https://www.facebook.com/sejan.kp/" target="_blank" rel="noopener noreferrer" class="dev-gold gold-text gold-text-tight font-display font-semibold">Sejan</a></p>
 			</div>
 		</div>

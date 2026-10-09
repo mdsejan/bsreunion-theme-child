@@ -841,7 +841,7 @@ body.admin-bar .site-header {
 }
 
 /* ── Hover snap fix: logos + CTA buttons ── */
-/* 1) Header & footer logo "স্মৃতির আঙিনায় '২৬" — lock paper + gold gradient on hover/focus/active */
+/* 1) Header & footer logo "শতবর্ষ পুনর্মিলনী '২৬" — lock paper + gold gradient on hover/focus/active */
 #siteHeader a.font-display,
 footer a.inline-flex.font-display {
   transition:

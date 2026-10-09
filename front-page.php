@@ -41,12 +41,12 @@ $brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 		</div>
 
 		<div id="heroContent" class="relative max-w-7xl mx-auto w-full px-5 sm:px-8 pb-12 sm:pb-16 lg:pb-14 pt-32 sm:pt-36 lg:pt-32 min-h-[100svh] flex flex-col justify-center">
-			<p id="heroKicker" class="inline-flex items-center gap-3 text-gold text-xs sm:text-sm tracking-[.18em] mb-4 opacity-0">
-				<span class="w-8 h-px bg-gold/50"></span> <?php esc_html_e( 'বাগবাড়ী কলিম মাহমুদ উচ্চ বিদ্যালয়', 'bagbari-reunion-sejan' ); ?>
+			<p class="inline-flex items-center gap-3 text-gold/90 text-base sm:text-lg tracking-[.12em] mb-6 opacity-0" id="heroBadge">
+				<span class="w-8 h-px bg-gold/50"></span> <?php esc_html_e( '১০০ বছর পূর্তি উপলক্ষে', 'bagbari-reunion-sejan' ); ?>
 			</p>
 			<h1 id="heroTitle" class="font-display text-[11vw] leading-[1.3] sm:text-6xl md:text-7xl lg:text-[clamp(2.8rem,5.2vw,5rem)] text-paper max-w-4xl">
-				<span class="hero-line"><span class="hero-line-in block translate-y-full"><?php esc_html_e( 'স্মৃতির আঙিনায়', 'bagbari-reunion-sejan' ); ?></span></span>
-				<span class="hero-line"><span class="hero-line-in block translate-y-full gold-text"><?php esc_html_e( 'পুনর্মিলনী ২০২৬', 'bagbari-reunion-sejan' ); ?></span></span>
+				<span class="hero-line"><span class="hero-line-in block translate-y-full"><?php esc_html_e( 'শতবর্ষ উদ্যাপন ও', 'bagbari-reunion-sejan' ); ?></span></span>
+				<span class="hero-line"><span class="hero-line-in block translate-y-full gold-text"><?php esc_html_e( 'মিলনমেলা ২০২৬', 'bagbari-reunion-sejan' ); ?></span></span>
 			</h1>
 			<p id="heroSub" class="mt-5 max-w-xl text-paper/80 text-base sm:text-lg leading-relaxed opacity-0">
 				<?php esc_html_e( 'এক ঝাঁক পুরোনো মুখ, টিফিনের চেনা ঘণ্টা আর মেঠো আঙিনার সেই নিরীহ হাসি — একদিনের জন্য হলেও চলুন ফিরে যাই কৈশোরের সোনালী দিনে।', 'bagbari-reunion-sejan' ); ?>
@@ -207,15 +207,6 @@ $brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 					</div>
 					<span class="absolute left-0 sm:left-1/2 top-1 -translate-x-1/2 w-4 h-4 rounded-full bg-gold ring-4 ring-maroon"></span>
 				</div>
-				<div class="relative pl-16 sm:pl-0 sm:grid sm:grid-cols-2 sm:gap-10 timeline-item">
-					<div class="sm:text-right sm:pr-10">
-						<p class="font-display text-gold text-lg"><?php esc_html_e( 'রাত ৯:০০ টা', 'bagbari-reunion-sejan' ); ?></p>
-						<h3 class="font-display text-xl text-paper mt-1"><?php esc_html_e( 'মেগা র‍্যাফেল ও বিদায়', 'bagbari-reunion-sejan' ); ?></h3>
-						<p class="text-paper/70 mt-2 leading-relaxed"><?php esc_html_e( 'আকর্ষণীয় পুরস্কারের মেগা র‍্যাফেল ড্র, এরপর রাত ১০টায় আয়োজনের সমাপ্তি।', 'bagbari-reunion-sejan' ); ?></p>
-					</div>
-					<div></div>
-					<span class="absolute left-0 sm:left-1/2 top-1 -translate-x-1/2 w-4 h-4 rounded-full bg-gold ring-4 ring-maroon"></span>
-				</div>
 			</div>
 		</div>
 	</section>
@@ -262,7 +253,7 @@ $brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 			<div class="text-center">
 				<p class="kicker justify-center inline-flex text-maroon text-sm leading-relaxed py-1"><?php esc_html_e( 'স্পন্সর ও পৃষ্ঠপোষক', 'bagbari-reunion-sejan' ); ?></p>
 				<h2 class="font-display text-3xl sm:text-4xl md:text-[2.75rem] leading-[1.45] py-2 mt-2"><?php esc_html_e( 'যাদের পাশে থাকায় সম্ভব এই আয়োজন', 'bagbari-reunion-sejan' ); ?></h2>
-				<p class="text-ink/70 max-w-2xl mx-auto leading-[1.7]"><?php esc_html_e( "প্রাক্তন শিক্ষার্থী ও শুভানুধ্যায়ী প্রতিষ্ঠানগুলোর অকুণ্ঠ পৃষ্ঠপোষকতায় গড়ে উঠছে স্মৃতির আঙিনায় '২৬।", 'bagbari-reunion-sejan' ); ?></p>
+				<p class="text-ink/70 max-w-2xl mx-auto leading-[1.7]"><?php esc_html_e( "প্রাক্তন শিক্ষার্থী ও শুভানুধ্যায়ী প্রতিষ্ঠানগুলোর অকুণ্ঠ পৃষ্ঠপোষকতায় গড়ে উঠছে শতবর্ষ পুনর্মিলনী '২৬।", 'bagbari-reunion-sejan' ); ?></p>
 			</div>
 			<?php
 			$sponsors_q = new WP_Query( array( 'post_type' => 'sponsors', 'posts_per_page' => -1, 'orderby' => 'menu_order', 'order' => 'ASC', 'no_found_rows' => true, 'update_post_meta_cache' => false, 'update_post_term_cache' => false ) );
@@ -324,7 +315,7 @@ $brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 					<div class="pass-slot mx-auto" aria-hidden="true"></div>
 					<p class="mt-5 text-[11px] tracking-[.3em] text-gold/85">Alumni Pass</p>
 					<h3 class="font-display text-3xl sm:text-4xl mt-2 gold-text"><?php esc_html_e( 'অ্যালুমনাই পাস', 'bagbari-reunion-sejan' ); ?></h3>
-					<p class="text-paper/50 text-xs mt-1"><?php esc_html_e( "স্মৃতির আঙিনায় '২৬ · বাগবাড়ী কলিম মাহমুদ উচ্চ বিদ্যালয়", 'bagbari-reunion-sejan' ); ?></p>
+					<p class="text-paper/50 text-xs mt-1"><?php esc_html_e( "শতবর্ষ পুনর্মিলনী '২৬ · বাগবাড়ী কলিম মাহমুদ উচ্চ বিদ্যালয়", 'bagbari-reunion-sejan' ); ?></p>
 				</div>
 				<div class="px-7 sm:px-10 grid grid-cols-3 gap-2 text-center border-y border-gold/15 py-4">
 					<div>

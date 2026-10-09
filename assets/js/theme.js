@@ -108,10 +108,10 @@
 		heroTl
 			.to('#heroImg', { scale: 1, duration: 1.8, ease: 'power2.out' }, 0)
 			.to('.hero-line-in', { y: 0, duration: 1, stagger: 0.12 }, 0.2)
-			.to('#heroKicker', { opacity: 1, duration: 0.7 }, 0.1)
-			.to('#heroSub', { opacity: 1, duration: 0.8 }, 0.9)
-			.to('#heroCtas', { opacity: 1, duration: 0.8 }, 1.05)
-			.to('#heroPills', { opacity: 1, duration: 0.8 }, 1.2)
+			.to('#heroBadge', { opacity: 1, duration: 0.7 }, 0.15)
+			.to('#heroSub', { opacity: 1, duration: 0.8 }, 1.0)
+			.to('#heroCtas', { opacity: 1, duration: 0.8 }, 1.15)
+			.to('#heroPills', { opacity: 1, duration: 0.8 }, 1.3)
 			.fromTo(
 				'#pinnedCard',
 				{ opacity: 0, y: 30, rotate: 8 },

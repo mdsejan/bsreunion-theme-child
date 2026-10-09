@@ -1,4 +1,4 @@
-# Bagbari Reunion Child — স্মৃতির আঙিনায় '২৬
+# Bagbari Reunion Child — শতবর্ষ পুনর্মিলনী '২৬
 
 A custom WordPress child theme for the **Bagbari Kalim Mahmud High School Reunion 2026** website, built on top of [GeneratePress](https://generatepress.com/). Dark royal + gold design system with Tailwind CSS, GSAP motion, and a dedicated registration experience.
 

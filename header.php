@@ -62,7 +62,7 @@ $register_url = brc_get_register_url();
 		<div class="max-w-7xl mx-auto px-5 sm:px-8 flex items-center justify-between h-20">
 			<a href="<?php echo esc_url( $home_url ); ?>" class="font-display text-xl sm:text-2xl text-paper flex items-center gap-2">
 				<span class="text-gold" aria-hidden="true">✺</span>
-				<span><?php esc_html_e( 'স্মৃতির আঙিনায়', 'bagbari-reunion-sejan' ); ?> <span class="gold-text">'২৬</span></span>
+				<span><?php esc_html_e( 'শতবর্ষ পুনর্মিলনী', 'bagbari-reunion-sejan' ); ?> <span class="gold-text">'২৬</span></span>
 			</a>
 
 			<?php if ( has_nav_menu( 'primary' ) ) : ?>
