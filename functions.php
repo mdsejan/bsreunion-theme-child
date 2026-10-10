@@ -467,7 +467,7 @@ function brc_render_image_field( $args ) {
 	$value   = isset( $options[ $id ] ) ? $options[ $id ] : '';
 	printf(
 		'<div class="brc-image-field" style="margin-bottom: 12px;">' .
-		'<input type="hidden" name="%1$s[%2$s]" id="%2$s" value="%3$s" class="brc-image-value" />' .
+		'<input type="hidden" name="%1$s[%2$s]" id="%2$s" value="%3$s" class="brc-image-value" data-brc-encode="1" />' .
 		'<div class="brc-image-preview" style="margin-bottom: 8px;">%4$s</div>' .
 		'<div>' .
 		'<button type="button" class="button brc-upload-btn">%5$s</button> ' .
@@ -495,13 +495,15 @@ function brc_render_text_field( $args ) {
 	$id      = $args['id'];
 	$type    = $args['type'] ?? 'text';
 	$value   = $options[ $id ] ?? '';
+	$mark    = ( in_array( $type, array( 'text', 'url', 'email' ), true ) ) ? ' data-brc-encode="1"' : '';
 	printf(
-		'<input type="%1$s" name="%2$s[%3$s]" value="%4$s" class="regular-text" placeholder="%5$s" />',
+		'<input type="%1$s" name="%2$s[%3$s]" value="%4$s" class="regular-text" placeholder="%5$s"%6$s />',
 		esc_attr( $type ),
 		esc_attr( BRC_SETTINGS_OPTION ),
 		esc_attr( $id ),
 		esc_attr( $value ),
-		esc_attr( $args['placeholder'] ?? '' )
+		esc_attr( $args['placeholder'] ?? '' ),
+		$mark
 	);
 	if ( ! empty( $args['desc'] ) ) {
 		printf( '<p class="description">%s</p>', esc_html( $args['desc'] ) );
@@ -554,16 +556,16 @@ function brc_render_datetime_field( $args ) {
 function brc_sanitize_theme_settings( $input ) {
 	$output = array();
 	if ( isset( $input['event_date'] ) ) {
-		$output['event_date'] = sanitize_text_field( $input['event_date'] );
+		$output['event_date'] = sanitize_text_field( brc_decode_encode_field( $input['event_date'] ) );
 	}
 	if ( isset( $input['event_time'] ) ) {
-		$output['event_time'] = sanitize_text_field( $input['event_time'] );
+		$output['event_time'] = sanitize_text_field( brc_decode_encode_field( $input['event_time'] ) );
 	}
 	if ( isset( $input['event_location'] ) ) {
-		$output['event_location'] = sanitize_text_field( $input['event_location'] );
+		$output['event_location'] = sanitize_text_field( brc_decode_encode_field( $input['event_location'] ) );
 	}
 	if ( isset( $input['pass_price'] ) ) {
-		$output['pass_price'] = sanitize_text_field( $input['pass_price'] );
+		$output['pass_price'] = sanitize_text_field( brc_decode_encode_field( $input['pass_price'] ) );
 	}
 	if ( isset( $input['event_countdown_datetime'] ) ) {
 		$raw = trim( (string) $input['event_countdown_datetime'] );
@@ -588,26 +590,48 @@ function brc_sanitize_theme_settings( $input ) {
 		$output['phone'] = sanitize_text_field( $input['phone'] );
 	}
 	if ( isset( $input['email'] ) ) {
-		$output['email'] = sanitize_email( $input['email'] );
+		$output['email'] = sanitize_email( brc_decode_encode_field( $input['email'] ) );
 	}
 	if ( isset( $input['facebook_page'] ) ) {
-		$output['facebook_page'] = esc_url_raw( trim( $input['facebook_page'] ) );
+		$output['facebook_page'] = esc_url_raw( trim( brc_decode_encode_field( $input['facebook_page'] ) ) );
 	}
 	if ( isset( $input['facebook_group'] ) ) {
-		$output['facebook_group'] = esc_url_raw( trim( $input['facebook_group'] ) );
+		$output['facebook_group'] = esc_url_raw( trim( brc_decode_encode_field( $input['facebook_group'] ) ) );
 	}
 	if ( isset( $input['sponsor_form_link'] ) ) {
-		$output['sponsor_form_link'] = esc_url_raw( trim( $input['sponsor_form_link'] ) );
+		$output['sponsor_form_link'] = esc_url_raw( trim( brc_decode_encode_field( $input['sponsor_form_link'] ) ) );
 	}
 	for ( $i = 1; $i <= 6; $i++ ) {
 		if ( isset( $input['canvas_img_' . $i] ) ) {
-			$output['canvas_img_' . $i] = esc_url_raw( trim( $input['canvas_img_' . $i] ) );
+			$output['canvas_img_' . $i] = esc_url_raw( trim( brc_decode_encode_field( $input['canvas_img_' . $i] ) ) );
 		}
 		if ( isset( $input['canvas_title_' . $i] ) ) {
-			$output['canvas_title_' . $i] = sanitize_text_field( $input['canvas_title_' . $i] );
+			$output['canvas_title_' . $i] = sanitize_text_field( brc_decode_encode_field( $input['canvas_title_' . $i] ) );
 		}
 	}
 	return $output;
+}
+
+/**
+ * Decode a value that was base64-encoded client-side before submission.
+ *
+ * ModSecurity can block an options.php POST whose raw body contains Bengali
+ * text or raw image URLs. Before the form submits, risky field values are
+ * base64-encoded (prefixed `brc:`) so the transport is plain ASCII. Here we
+ * reverse that. Plain values are returned untouched.
+ *
+ * @param mixed $value Raw submitted value.
+ * @return string Decoded / original value.
+ */
+function brc_decode_encode_field( $value ) {
+	$value = (string) $value;
+	if ( 0 === strpos( $value, 'brc:' ) ) {
+		$decoded = base64_decode( substr( $value, 4 ), true );
+		if ( false !== $decoded ) {
+			return $decoded;
+		}
+	}
+	return $value;
 }
 
 function brc_get_theme_settings() {
@@ -811,7 +835,7 @@ function brc_render_theme_settings_page() {
 	?>
 	<div class="wrap">
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-		<form action="options.php" method="post">
+		<form action="options.php" method="post" data-brc-encode-form="1">
 			<?php
 			settings_fields( BRC_SETTINGS_GROUP );
 			do_settings_sections( BRC_SETTINGS_PAGE );

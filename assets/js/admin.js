@@ -44,4 +44,52 @@ jQuery( function ( $ ) {
 		$container.find( '.brc-image-value' ).val( '' );
 		$container.find( '.brc-image-preview' ).empty();
 	} );
+
+	/**
+	 * Encode risky field values before the POST hits options.php.
+	 *
+	 * ModSecurity can reject an options.php POST whose raw body contains Bengali
+	 * text or raw image/HTTP URLs. Any input flagged with `data-brc-encode` whose
+	 * current value holds non-ASCII (Bengali) characters, an http(s)/ftp URL, or
+	 * markup is base64-encoded on submit and prefixed with `brc:`. The server's
+	 * brc_decode_encode_field() restores the original value in the sanitizer, so
+	 * the transport is plain ASCII while what is stored stays exactly as typed.
+	 */
+	function brcB64( str ) {
+		var bytes, i, bin;
+		try {
+			var enc = new TextEncoder();
+			bytes = enc.encode( str );
+		} catch ( e ) {
+			bytes = null;
+		}
+		if ( bytes ) {
+			bin = '';
+			for ( i = 0; i < bytes.length; i += 0x8000 ) {
+				bin += String.fromCharCode.apply( null, bytes.subarray( i, i + 0x8000 ) );
+			}
+			return btoa( bin );
+		}
+		return btoa( unescape( encodeURIComponent( str ) ) );
+	}
+
+	function brcNeedsEncode( val ) {
+		if ( ! val ) {
+			return false;
+		}
+		return /[^\x00-\x7F]/.test( val ) ||
+			/\bhttps?:\/\/|ftp:\/\//i.test( val ) ||
+			/<[^>]+>/.test( val );
+	}
+
+	$( 'form[data-brc-encode-form="1"]' ).on( 'submit', function () {
+		var $inputs = $( this ).find( 'input[data-brc-encode="1"]' );
+		$inputs.each( function () {
+			var $this = $( this );
+			if ( brcNeedsEncode( $this.val() ) ) {
+				$this.val( 'brc:' + brcB64( $this.val() ) );
+			}
+		} );
+		return true;
+	} );
 } );
