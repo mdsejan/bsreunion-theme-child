@@ -45,7 +45,7 @@ $brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 				<span class="w-8 h-px bg-gold/50"></span> <?php esc_html_e( '১০০ বছর পূর্তি উপলক্ষে', 'bagbari-reunion-sejan' ); ?>
 			</p>
 			<h1 id="heroTitle" class="font-display text-[11vw] leading-[1.3] sm:text-6xl md:text-7xl lg:text-[clamp(2.8rem,5.2vw,5rem)] text-paper max-w-4xl">
-				<span class="hero-line"><span class="hero-line-in block translate-y-full"><?php esc_html_e( 'শতবর্ষ উদ্যাপন ও', 'bagbari-reunion-sejan' ); ?></span></span>
+				<span class="hero-line"><span class="hero-line-in block translate-y-full"><?php esc_html_e( 'শতবর্ষ উদযাপন ও', 'bagbari-reunion-sejan' ); ?></span></span>
 				<span class="hero-line"><span class="hero-line-in block translate-y-full gold-text"><?php esc_html_e( 'মিলনমেলা ২০২৬', 'bagbari-reunion-sejan' ); ?></span></span>
 			</h1>
 			<p id="heroSub" class="mt-5 max-w-xl text-paper/80 text-base sm:text-lg leading-relaxed opacity-0">
@@ -91,7 +91,7 @@ $brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 		<div class="relative max-w-6xl mx-auto px-5 sm:px-8 py-8 sm:py-10 text-center">
 			<?php $brc_cd_mode = function_exists( 'brc_get_countdown_mode' ) ? (int) brc_get_countdown_mode() : 0; ?>
 			<p class="font-display gold-text inline-block text-base sm:text-lg tracking-[.12em] leading-[1.7] pt-1">— <?php echo esc_html( $brc_cd_mode ? __( 'প্রতিক্ষার অবসান', 'bagbari-reunion-sejan' ) : __( 'রেজিস্ট্রেশন চলছে', 'bagbari-reunion-sejan' ) ); ?></p>
-			<h2 class="font-display text-3xl sm:text-4xl md:text-[2.75rem] mt-2 leading-[1.45] pt-2"><?php echo esc_html( $brc_cd_mode ? __( 'শতবর্ষ উদ্যাপনের বাকি', 'bagbari-reunion-sejan' ) : __( 'রেজিস্ট্রেশনের সময় বাকি', 'bagbari-reunion-sejan' ) ); ?></h2>
+			<h2 class="font-display text-3xl sm:text-4xl md:text-[2.75rem] mt-2 leading-[1.45] pt-2"><?php echo esc_html( $brc_cd_mode ? __( 'শতবর্ষ উদযাপনের বাকি', 'bagbari-reunion-sejan' ) : __( 'রেজিস্ট্রেশনের সময় বাকি', 'bagbari-reunion-sejan' ) ); ?></h2>
 			<div id="countdown" class="mt-6 sm:mt-7 flex justify-center gap-3 sm:gap-5" data-countdown-target="<?php echo esc_attr( brc_get_countdown_target_iso() ); ?>">
 				<div class="text-center">
 					<div class="w-[72px] sm:w-28 lg:w-32 rounded-xl bg-white/10 border border-[#e7b24c]/35 py-4 sm:py-5 shadow-md backdrop-blur-sm font-display font-bold text-[#facc15] text-3xl sm:text-5xl leading-[1.25] pt-5" style="text-shadow:0 0 18px rgba(250,204,21,.45)" data-cd="days">০০</div>
@@ -293,6 +293,57 @@ $brc_has_split  = count( $brc_time_parts ) > 1 && '' !== $brc_time_parts[1];
 			<?php endif; ?>
 		</div>
 	</section>
+
+	<?php
+	$booths_q = new WP_Query(
+		array(
+			'post_type'              => 'reg_booths',
+			'posts_per_page'         => -1,
+			'orderby'                => 'menu_order',
+			'order'                  => 'ASC',
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => true,
+			'update_post_term_cache' => false,
+		)
+	);
+	if ( $booths_q->have_posts() ) :
+		?>
+	<section id="offline-registration" class="relative bg-ink py-24 sm:py-32 overflow-hidden">
+		<div class="grain"></div>
+		<div class="pointer-events-none absolute -top-24 -right-24 w-[32rem] h-[32rem] glow-gold opacity-40"></div>
+		<div class="pointer-events-none absolute -bottom-32 -left-24 w-[34rem] h-[34rem] glow-maroon opacity-30"></div>
+		<div class="relative max-w-6xl mx-auto px-5 sm:px-8">
+			<div class="text-center">
+				<p class="kicker justify-center inline-flex text-gold text-sm leading-relaxed py-1"><?php esc_html_e( '— অফলাইন রেজিস্ট্রেশন —', 'bagbari-reunion-sejan' ); ?></p>
+				<h2 class="font-display text-3xl sm:text-4xl md:text-[2.75rem] leading-[1.45] py-2 mt-2 text-paper"><?php esc_html_e( 'অফলাইন রেজিস্ট্রেশন বুথসমূহ', 'bagbari-reunion-sejan' ); ?></h2>
+			</div>
+			<div class="mt-12 sm:mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+				<?php while ( $booths_q->have_posts() ) : $booths_q->the_post(); ?>
+					<?php
+					$booth_address = get_post_meta( get_the_ID(), 'booth_address', true );
+					$booth_phone   = get_post_meta( get_the_ID(), 'booth_phone', true );
+					?>
+					<div class="booth-card rounded-xl p-6 flex flex-col gap-4 backdrop-blur-sm">
+						<h3 class="font-display text-xl leading-[1.4] font-bold text-[#e5c185]"><?php echo esc_html( get_the_title() ); ?></h3>
+						<?php if ( $booth_address ) : ?>
+							<div class="flex items-start gap-3">
+								<span class="text-[#d1c7bd]" aria-hidden="true">📍</span>
+								<p class="text-[#d1c7bd] leading-relaxed"><?php echo esc_html( $booth_address ); ?></p>
+							</div>
+						<?php endif; ?>
+						<?php if ( $booth_phone ) : ?>
+							<div class="flex items-start gap-3">
+								<span class="text-[#d1c7bd]" aria-hidden="true">📞</span>
+								<p class="font-semibold text-[#d1c7bd] leading-relaxed"><?php esc_html_e( 'মোবাইল:', 'bagbari-reunion-sejan' ); ?> <span class="booth-phone text-[#fbe382] font-bold"><?php echo esc_html( $booth_phone ); ?></span></p>
+							</div>
+						<?php endif; ?>
+					</div>
+				<?php endwhile; ?>
+			</div>
+		</div>
+	</section>
+		<?php wp_reset_postdata(); ?>
+	<?php endif; ?>
 
 	<section id="pricing" class="relative bg-maroon py-24 sm:py-32 overflow-hidden">
 		<div class="grain"></div>

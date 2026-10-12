@@ -939,3 +939,40 @@ footer a.inline-flex.font-display:active .f2026-brand-mark {
 #about a.link-arrow {
   display: none !important;
 }
+
+/* Offline Registration Booths — dark theme matched to #about (আমাদের কথা) */
+#offline-registration {
+  background-color: #150e0a;
+}
+#offline-registration .kicker {
+  color: #c5a059;
+}
+#offline-registration h2 {
+  color: #fce8cd;
+}
+#offline-registration .booth-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  border-radius: 12px;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
+    transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+#offline-registration .booth-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(197, 160, 89, 0.45);
+  transform: translateY(-2px);
+}
+#offline-registration .booth-card h3 {
+  color: #e5c185;
+}
+#offline-registration .booth-card p,
+#offline-registration .booth-card span[aria-hidden="true"] {
+  color: #d1c7bd;
+}
+#offline-registration .booth-card .booth-phone {
+  color: #fbe382;
+  font-weight: 700;
+}
+

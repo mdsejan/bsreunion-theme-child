@@ -14,14 +14,17 @@ $home_url     = home_url( '/' );
 $register_url = brc_get_register_url();
 $about_url    = home_url( '/#about' );
 
-$brc_settings      = function_exists( 'brc_get_theme_settings' ) ? brc_get_theme_settings() : array( 'phone' => '', 'email' => '', 'facebook_page' => '', 'facebook_group' => '' );
+$brc_settings      = function_exists( 'brc_get_theme_settings' ) ? brc_get_theme_settings() : array( 'phone' => '', 'phone_2' => '', 'phone_3' => '', 'email' => '', 'facebook_page' => '', 'facebook_group' => '' );
+
 $brc_phone_display = ! empty( $brc_settings['phone'] ) ? $brc_settings['phone'] : '01793 - 548 365';
-$brc_phone_raw     = preg_replace( '/[^0-9+]/', '', $brc_phone_display );
-if ( preg_match( '/^0\d+$/', $brc_phone_raw ) ) {
-	$brc_phone_href = 'tel:+88' . $brc_phone_raw;
-} else {
-	$brc_phone_href = 'tel:' . $brc_phone_raw;
+
+$brc_phones = array( $brc_phone_display );
+foreach ( array( 'phone_2', 'phone_3' ) as $brc_phone_key ) {
+	if ( ! empty( $brc_settings[ $brc_phone_key ] ) ) {
+		$brc_phones[] = $brc_settings[ $brc_phone_key ];
+	}
 }
+
 $brc_email    = ! empty( $brc_settings['email'] ) ? $brc_settings['email'] : 'help@bagbari-reunion.com';
 $brc_fb_page  = ! empty( $brc_settings['facebook_page'] ) ? $brc_settings['facebook_page'] : '';
 $brc_fb_group = ! empty( $brc_settings['facebook_group'] ) ? $brc_settings['facebook_group'] : '';
@@ -40,19 +43,28 @@ $brc_fb_group = ! empty( $brc_settings['facebook_group'] ) ? $brc_settings['face
 						<span class="f2026-brand-mark text-gold text-[1.35em] leading-none" aria-hidden="true">✺</span>
 						<span><?php esc_html_e( 'শতবর্ষ পুনর্মিলনী', 'bagbari-reunion-sejan' ); ?> <span class="gold-text gold-text-tight">'২৬</span></span>
 					</a>
-					<p class="mt-3 max-w-xs mx-auto lg:mx-0 text-[15px] leading-[1.9] text-[#e2d5c3]/65">
-						<?php esc_html_e( "একদিনের জন্য ফিরে যাই কৈশোরের সোনালী আঙিনায়।", 'bagbari-reunion-sejan' ); ?>
-					</p>
+					<div class="footer-organizer max-w-xs mx-auto lg:mx-0" style="margin-top: 10px; font-size: 14px; color: #d1c7bd; line-height: 1.6;">
+						<strong style="color: #c5a059; font-weight: 600; display: block;"><?php esc_html_e( 'আয়োজনে:', 'bagbari-reunion-sejan' ); ?></strong>
+						<?php esc_html_e( 'স্টুডেন্ট ওয়েলফেয়ার অ্যাসোসিয়েশন (SWA)', 'bagbari-reunion-sejan' ); ?><br>
+						<?php esc_html_e( 'বাগবাড়ী, গাবতলী, বগুড়া', 'bagbari-reunion-sejan' ); ?>
+					</div>
 				</div>
 
 				<div class="f2026-reveal text-center" style="--d:.12s">
 					<div class="flex flex-row flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+					<?php foreach ( $brc_phones as $brc_phone ) :
+						$brc_phone_href = function_exists( 'brc_get_phone_href' ) ? brc_get_phone_href( $brc_phone ) : 'tel:' . preg_replace( '/[^0-9+]/', '', (string) $brc_phone );
+						if ( '' === $brc_phone_href ) {
+							continue;
+						}
+						?>
 						<a href="<?php echo esc_url( $brc_phone_href ); ?>" class="f2026-pill">
 							<span class="f2026-ico" aria-hidden="true">
 								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
 							</span>
-							<span dir="ltr"><?php echo esc_html( $brc_phone_display ); ?></span>
+							<span dir="ltr"><?php echo esc_html( $brc_phone ); ?></span>
 						</a>
+					<?php endforeach; ?>
 						<a href="<?php echo esc_url( 'mailto:' . $brc_email ); ?>" class="f2026-pill">
 							<span class="f2026-ico" aria-hidden="true">
 								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>

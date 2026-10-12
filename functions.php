@@ -67,6 +67,90 @@ function brc_register_sponsors_cpt() {
 }
 add_action( 'init', 'brc_register_sponsors_cpt' );
 
+/* ------------------------------------------------------------------ */
+/* Offline Registration Booths — CPT + Metabox                         */
+/* ------------------------------------------------------------------ */
+
+function brc_register_reg_booths_cpt() {
+	$labels = array(
+		'name'               => __( 'Registration Booths', 'bagbari-reunion-sejan' ),
+		'singular_name'      => __( 'Registration Booth', 'bagbari-reunion-sejan' ),
+		'menu_name'          => __( 'Registration Booths', 'bagbari-reunion-sejan' ),
+		'name_admin_bar'     => __( 'Registration Booth', 'bagbari-reunion-sejan' ),
+		'add_new'            => __( 'Add New', 'bagbari-reunion-sejan' ),
+		'add_new_item'       => __( 'Add New Registration Booth', 'bagbari-reunion-sejan' ),
+		'new_item'           => __( 'New Registration Booth', 'bagbari-reunion-sejan' ),
+		'edit_item'          => __( 'Edit Registration Booth', 'bagbari-reunion-sejan' ),
+		'view_item'          => __( 'View Registration Booth', 'bagbari-reunion-sejan' ),
+		'all_items'          => __( 'All Registration Booths', 'bagbari-reunion-sejan' ),
+		'search_items'       => __( 'Search Registration Booths', 'bagbari-reunion-sejan' ),
+		'not_found'          => __( 'No registration booths found.', 'bagbari-reunion-sejan' ),
+		'not_found_in_trash' => __( 'No registration booths found in Trash.', 'bagbari-reunion-sejan' ),
+	);
+	$args = array(
+		'labels'             => $labels,
+		'public'             => true,
+		'has_archive'        => false,
+		'show_ui'            => true,
+		'show_in_menu'       => true,
+		'show_in_rest'       => true,
+		'menu_icon'          => 'dashicons-location-alt',
+		'supports'           => array( 'title' ),
+		'rewrite'            => array( 'slug' => 'reg-booths' ),
+		'capability_type'    => 'post',
+	);
+	register_post_type( 'reg_booths', $args );
+}
+add_action( 'init', 'brc_register_reg_booths_cpt' );
+
+function brc_add_reg_booths_metabox() {
+	add_meta_box(
+		'brc_reg_booths_details',
+		__( 'Office Registration Booth Details', 'bagbari-reunion-sejan' ),
+		'brc_render_reg_booths_metabox',
+		'reg_booths',
+		'normal',
+		'high'
+	);
+}
+add_action( 'add_meta_boxes', 'brc_add_reg_booths_metabox' );
+
+function brc_render_reg_booths_metabox( $post ) {
+	wp_nonce_field( 'brc_reg_booths_meta', 'brc_reg_booths_nonce' );
+	$address = esc_textarea( get_post_meta( $post->ID, 'booth_address', true ) );
+	$phone   = esc_attr( get_post_meta( $post->ID, 'booth_phone', true ) );
+	?>
+	<p>
+		<label for="booth_address"><strong><?php esc_html_e( 'Address', 'bagbari-reunion-sejan' ); ?></strong></label><br>
+		<textarea name="booth_address" id="booth_address" rows="3" class="widefat" placeholder="<?php esc_attr_e( 'Booth address / venue', 'bagbari-reunion-sejan' ); ?>"><?php echo $address; ?></textarea>
+	</p>
+	<p>
+		<label for="booth_phone"><strong><?php esc_html_e( 'Mobile Number', 'bagbari-reunion-sejan' ); ?></strong></label><br>
+		<input type="text" name="booth_phone" id="booth_phone" class="regular-text" value="<?php echo $phone; ?>" placeholder="01XXX-XXXXXX" />
+	</p>
+	<?php
+}
+
+function brc_save_reg_booths_meta( $post_id ) {
+	if ( ! isset( $_POST['brc_reg_booths_nonce'] ) || ! wp_verify_nonce( $_POST['brc_reg_booths_nonce'], 'brc_reg_booths_meta' ) ) {
+		return;
+	}
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+	if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		return;
+	}
+
+	if ( isset( $_POST['booth_address'] ) ) {
+		update_post_meta( $post_id, 'booth_address', sanitize_textarea_field( wp_unslash( $_POST['booth_address'] ) ) );
+	}
+	if ( isset( $_POST['booth_phone'] ) ) {
+		update_post_meta( $post_id, 'booth_phone', sanitize_text_field( wp_unslash( $_POST['booth_phone'] ) ) );
+	}
+}
+add_action( 'save_post_reg_booths', 'brc_save_reg_booths_meta' );
+
 /**
  * Enqueue parent + child styles, GSAP, and theme assets.
  */
@@ -349,11 +433,29 @@ function brc_register_theme_settings() {
 
 	add_settings_field(
 		'phone',
-		__( 'Contact Phone', 'bagbari-reunion-sejan' ),
+		__( 'Contact Phone 1', 'bagbari-reunion-sejan' ),
 		'brc_render_text_field',
 		BRC_SETTINGS_PAGE,
 		'brc_contact_section',
 		array( 'id' => 'phone', 'placeholder' => '01793-548365', 'desc' => __( 'Shown in footer. Include country code for tel: link.', 'bagbari-reunion-sejan' ) )
+	);
+
+	add_settings_field(
+		'phone_2',
+		__( 'Contact Phone 2', 'bagbari-reunion-sejan' ),
+		'brc_render_text_field',
+		BRC_SETTINGS_PAGE,
+		'brc_contact_section',
+		array( 'id' => 'phone_2', 'placeholder' => '01700-000000', 'desc' => __( 'Optional. Shown in footer only when filled.', 'bagbari-reunion-sejan' ) )
+	);
+
+	add_settings_field(
+		'phone_3',
+		__( 'Contact Phone 3', 'bagbari-reunion-sejan' ),
+		'brc_render_text_field',
+		BRC_SETTINGS_PAGE,
+		'brc_contact_section',
+		array( 'id' => 'phone_3', 'placeholder' => '01800-000000', 'desc' => __( 'Optional. Shown in footer only when filled.', 'bagbari-reunion-sejan' ) )
 	);
 
 	add_settings_field(
@@ -589,6 +691,12 @@ function brc_sanitize_theme_settings( $input ) {
 	if ( isset( $input['phone'] ) ) {
 		$output['phone'] = sanitize_text_field( $input['phone'] );
 	}
+	if ( isset( $input['phone_2'] ) ) {
+		$output['phone_2'] = sanitize_text_field( $input['phone_2'] );
+	}
+	if ( isset( $input['phone_3'] ) ) {
+		$output['phone_3'] = sanitize_text_field( $input['phone_3'] );
+	}
 	if ( isset( $input['email'] ) ) {
 		$output['email'] = sanitize_email( brc_decode_encode_field( $input['email'] ) );
 	}
@@ -644,6 +752,8 @@ function brc_get_theme_settings() {
 		'event_countdown_datetime' => '2026-11-25T09:00:00+06:00',
 		'registration_deadline'    => '',
 		'phone'                    => '',
+		'phone_2'                  => '',
+		'phone_3'                  => '',
 		'email'                => '',
 		'facebook_page'        => '',
 		'facebook_group'       => '',
@@ -759,6 +869,30 @@ function brc_sc_phone_url() {
 	return esc_url( brc_get_phone_href( $val ) );
 }
 add_shortcode( 'brc_phone_url', 'brc_sc_phone_url' );
+
+function brc_sc_phone_2() {
+	$s = brc_get_theme_settings();
+	return ! empty( $s['phone_2'] ) ? esc_html( $s['phone_2'] ) : '';
+}
+add_shortcode( 'brc_phone_2', 'brc_sc_phone_2' );
+
+function brc_sc_phone_2_url() {
+	$s = brc_get_theme_settings();
+	return ! empty( $s['phone_2'] ) ? esc_url( brc_get_phone_href( $s['phone_2'] ) ) : '';
+}
+add_shortcode( 'brc_phone_2_url', 'brc_sc_phone_2_url' );
+
+function brc_sc_phone_3() {
+	$s = brc_get_theme_settings();
+	return ! empty( $s['phone_3'] ) ? esc_html( $s['phone_3'] ) : '';
+}
+add_shortcode( 'brc_phone_3', 'brc_sc_phone_3' );
+
+function brc_sc_phone_3_url() {
+	$s = brc_get_theme_settings();
+	return ! empty( $s['phone_3'] ) ? esc_url( brc_get_phone_href( $s['phone_3'] ) ) : '';
+}
+add_shortcode( 'brc_phone_3_url', 'brc_sc_phone_3_url' );
 
 function brc_sc_email() {
 	$s = brc_get_theme_settings();
