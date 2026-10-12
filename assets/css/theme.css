@@ -976,3 +976,273 @@ footer a.inline-flex.font-display:active .f2026-brand-mark {
   font-weight: 700;
 }
 
+/* ── Block Editor (Gutenberg) content typography ── */
+/* Tailwind preflight removes default heading/list styling, so policy and
+   other the_content() output is restored and themed here via `.brc-prose`. */
+.brc-prose {
+  color: rgba(248, 239, 219, 0.82);
+  font-size: 1.0625rem;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+
+.brc-prose > :first-child {
+  margin-top: 0;
+}
+
+.brc-prose p {
+  margin: 0 0 1.15rem;
+}
+
+.brc-prose h1,
+.brc-prose h2,
+.brc-prose h3,
+.brc-prose h4,
+.brc-prose h5,
+.brc-prose h6 {
+  font-family: "Tiro Bangla", serif;
+  color: #f8efdb;
+  font-weight: 600;
+  line-height: 1.45;
+  margin: 2rem 0 0.85rem;
+  scroll-margin-top: 6rem;
+}
+
+.brc-prose h1 {
+  font-size: 1.9rem;
+}
+
+.brc-prose h2 {
+  font-size: 1.5rem;
+  padding-left: 0.85rem;
+  border-left: 3px solid #e7b24c;
+}
+
+.brc-prose h3 {
+  font-size: 1.25rem;
+  color: #f6d98c;
+}
+
+.brc-prose h4 {
+  font-size: 1.1rem;
+  color: #f6d98c;
+}
+
+.brc-prose h5,
+.brc-prose h6 {
+  font-size: 1rem;
+  color: #eddcb8;
+}
+
+.brc-prose ul,
+.brc-prose ol {
+  margin: 0 0 1.15rem;
+  padding-left: 1.5rem;
+}
+
+.brc-prose ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.brc-prose ul > li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.brc-prose ul > li::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #e7b24c;
+  font-size: 0.72em;
+  line-height: 2.55;
+}
+
+.brc-prose ol > li {
+  margin: 0.5rem 0;
+  padding-left: 0.35rem;
+}
+
+.brc-prose li::marker {
+  color: #e7b24c;
+  font-weight: 700;
+}
+
+.brc-prose ul ul,
+.brc-prose ul ol,
+.brc-prose ol ul,
+.brc-prose ol ol {
+  margin: 0.5rem 0;
+}
+
+.brc-prose a {
+  color: #f6d98c;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(231, 178, 76, 0.5);
+  transition:
+    color 0.25s ease,
+    text-decoration-color 0.25s ease;
+}
+
+.brc-prose a:hover,
+.brc-prose a:focus-visible {
+  color: #f9e7b0;
+  text-decoration-color: #f9e7b0;
+}
+
+.brc-prose strong {
+  color: #f8efdb;
+  font-weight: 700;
+}
+
+.brc-prose em {
+  color: #eddcb8;
+}
+
+.brc-prose blockquote {
+  margin: 1.5rem 0;
+  padding: 0.9rem 1.25rem;
+  border-left: 4px solid #e7b24c;
+  border-radius: 0 0.75rem 0.75rem 0;
+  background: rgba(231, 178, 76, 0.07);
+  color: #eddcb8;
+  font-style: italic;
+}
+
+.brc-prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.brc-prose hr,
+.brc-prose .wp-block-separator {
+  border: 0;
+  height: 1px;
+  margin: 2.25rem 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(231, 178, 76, 0.5),
+    transparent
+  );
+}
+
+.brc-prose code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  padding: 0.15em 0.45em;
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.07);
+  color: #f6d98c;
+}
+
+.brc-prose pre {
+  margin: 1.5rem 0;
+  padding: 1rem 1.15rem;
+  border: 1px solid rgba(231, 178, 76, 0.2);
+  border-radius: 0.75rem;
+  background: #150e0a;
+  overflow-x: auto;
+}
+
+.brc-prose pre code {
+  padding: 0;
+  background: transparent;
+  color: #eddcb8;
+}
+
+.brc-prose .wp-block-table {
+  overflow-x: auto;
+}
+
+.brc-prose table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.brc-prose th,
+.brc-prose td {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgba(231, 178, 76, 0.2);
+  text-align: left;
+}
+
+.brc-prose th {
+  color: #f8efdb;
+  font-weight: 600;
+  background: rgba(231, 178, 76, 0.1);
+}
+
+.brc-prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+}
+
+.brc-prose figure {
+  margin: 1.5rem 0;
+}
+
+.brc-prose figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: rgba(248, 239, 219, 0.6);
+  text-align: center;
+}
+
+.brc-prose .aligncenter {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.brc-prose .alignleft {
+  float: left;
+  margin: 0 1.25rem 0.75rem 0;
+}
+
+.brc-prose .alignright {
+  float: right;
+  margin: 0 0 0.75rem 1.25rem;
+}
+
+.brc-prose .wp-block-button__link {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.7rem 1.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  background: linear-gradient(135deg, #f6d98c, #e0a83c 55%, #c68a24);
+  color: #1a1108;
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 0.3s ease;
+}
+
+.brc-prose .wp-block-button__link:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.07);
+  color: #1a1108;
+}
+
+@media (max-width: 640px) {
+  .brc-prose {
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+  .brc-prose h1 {
+    font-size: 1.6rem;
+  }
+  .brc-prose h2 {
+    font-size: 1.3rem;
+  }
+  .brc-prose h3 {
+    font-size: 1.12rem;
+  }
+}
+
