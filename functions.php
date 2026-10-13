@@ -629,17 +629,17 @@ function brc_render_countdown_mode_field( $args ) {
 }
 
 function brc_render_datetime_field( $args ) {
-	$options = get_option( BRC_SETTINGS_OPTION, array() );
-	$id      = $args['id'];
-	$value   = $options[ $id ] ?? '';
+	$options  = get_option( BRC_SETTINGS_OPTION, array() );
+	$id       = $args['id'];
+	$value    = $options[ $id ] ?? '';
+	$tz       = wp_timezone();
 	$dt_value = '';
-	if ( '' !== $value ) {
-		$ts = strtotime( $value );
-		if ( false !== $ts ) {
-			$dt_value = gmdate( 'Y-m-d\TH:i', $ts + (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ) );
-		} elseif ( preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/', $value ) ) {
-			$dt_value = substr( $value, 0, 16 );
-		}
+	$ts       = ( '' !== $value ) ? strtotime( $value ) : false;
+	if ( false !== $ts ) {
+		// Show the stored instant in the site's timezone inside the datetime-local input.
+		$dt_value = wp_date( 'Y-m-d\TH:i', $ts, $tz );
+	} elseif ( '' !== $value && preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/', $value ) ) {
+		$dt_value = substr( $value, 0, 16 );
 	}
 	printf(
 		'<input type="datetime-local" name="%1$s[%2$s]" value="%3$s" class="regular-text" />',
@@ -647,12 +647,58 @@ function brc_render_datetime_field( $args ) {
 		esc_attr( $id ),
 		esc_attr( $dt_value )
 	);
-	if ( '' !== $value && false !== strtotime( $value ) ) {
-		printf( '<p class="description">%s: <code>%s</code></p>', esc_html__( 'Saved', 'bagbari-reunion-sejan' ), esc_html( gmdate( 'c', strtotime( $value ) ) ) );
+	if ( false !== $ts ) {
+		// Preview the saved value in local time (matches the Site Timezone setting).
+		printf(
+			'<p class="description">%s: <code>%s</code> (%s)</p>',
+			esc_html__( 'Saved', 'bagbari-reunion-sejan' ),
+			esc_html( wp_date( 'c', $ts, $tz ) ),
+			esc_html( wp_date( 'Y-m-d H:i', $ts, $tz ) )
+		);
 	}
 	if ( ! empty( $args['desc'] ) ) {
 		printf( '<p class="description">%s</p>', esc_html( $args['desc'] ) );
 	}
+}
+
+/**
+ * Normalize a submitted countdown date/time into a canonical UTC ISO-8601 string.
+ *
+ * The datetime-local input submits a bare wall-clock value ("Y-m-d\TH:i") that is
+ * meant to be read in the site's timezone (wp_timezone()). Values that already
+ * carry an explicit offset (the default and any legacy ISO strings) are respected
+ * as-is. Either way the result is the same absolute instant, stored as UTC, so the
+ * frontend countdown always targets the configured local moment.
+ *
+ * @param mixed $raw Raw submitted value.
+ * @return string UTC "c" string, or the sanitized raw value when unparseable.
+ */
+function brc_normalize_countdown_datetime( $raw ) {
+	$raw = trim( (string) $raw );
+	if ( '' === $raw ) {
+		return '';
+	}
+	$dt = false;
+	if ( preg_match( '/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2})?$/', $raw ) ) {
+		// Bare wall-clock: interpret it in the site's timezone, not the PHP default (UTC).
+		foreach ( array( 'Y-m-d\TH:i:s', 'Y-m-d\TH:i', 'Y-m-d H:i:s', 'Y-m-d H:i' ) as $format ) {
+			$parsed = DateTimeImmutable::createFromFormat( $format, $raw, wp_timezone() );
+			if ( $parsed instanceof DateTimeImmutable ) {
+				$dt = $parsed;
+				break;
+			}
+		}
+	} else {
+		try {
+			$dt = new DateTimeImmutable( $raw );
+		} catch ( Exception $e ) {
+			$dt = false;
+		}
+	}
+	if ( ! $dt instanceof DateTimeImmutable ) {
+		return sanitize_text_field( $raw );
+	}
+	return $dt->setTimezone( new DateTimeZone( 'UTC' ) )->format( 'c' );
 }
 
 function brc_sanitize_theme_settings( $input ) {
@@ -670,16 +716,7 @@ function brc_sanitize_theme_settings( $input ) {
 		$output['pass_price'] = sanitize_text_field( brc_decode_encode_field( $input['pass_price'] ) );
 	}
 	if ( isset( $input['event_countdown_datetime'] ) ) {
-		$raw = trim( (string) $input['event_countdown_datetime'] );
-		if ( '' === $raw ) {
-			$output['event_countdown_datetime'] = '';
-		} elseif ( preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/', $raw ) ) {
-			$ts = strtotime( $raw );
-			$output['event_countdown_datetime'] = false !== $ts ? gmdate( 'c', $ts ) : sanitize_text_field( $raw );
-		} else {
-			$ts = strtotime( $raw );
-			$output['event_countdown_datetime'] = false !== $ts ? gmdate( 'c', $ts ) : sanitize_text_field( $raw );
-		}
+		$output['event_countdown_datetime'] = brc_normalize_countdown_datetime( $input['event_countdown_datetime'] );
 	}
 	if ( isset( $input['countdown_mode'] ) ) {
 		$output['countdown_mode'] = ! empty( $input['countdown_mode'] ) ? 1 : 0;
@@ -819,7 +856,9 @@ function brc_get_countdown_target_iso() {
 	if ( '' !== $raw ) {
 		$ts = strtotime( $raw );
 		if ( false !== $ts ) {
-			return gmdate( 'c', $ts );
+			// Emit the target instant in the site's timezone (offset included) so the
+			// frontend `new Date()` resolves the exact configured local moment.
+			return wp_date( 'c', $ts, wp_timezone() );
 		}
 	}
 	return apply_filters( 'brc_countdown_target', '2026-11-25T09:00:00+06:00' );
